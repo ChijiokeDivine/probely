@@ -343,7 +343,7 @@ export default function Home() {
               className="anim-p"
             >
               Collect unbiased interview feedback and make 
-              <br /> more confident hiring decisions.
+              <br className="hidden md:block" /> more confident hiring decisions.
             </p>
           </div>
 
@@ -425,6 +425,7 @@ export default function Home() {
           alt="QR code"
           width={isMobile ? 58 : 74}
           height={isMobile ? 58 : 74}
+          loading="eager"
         />
       </div>
     </div>
