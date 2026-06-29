@@ -1,4 +1,5 @@
 allowBuilds:
+  keccak: true
   sharp: true
   unrs-resolver: true
 ignoredBuiltDependencies:
