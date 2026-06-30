@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
-
+import UnifyFinancesSection from "./components/UnifyFinancesSection";
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
@@ -58,7 +58,8 @@ export default function Home() {
   const isMobile = viewportWidth < 768;
   const [setHeroRef, isHeroInView] = useInView();
   return (
-    <div
+    <>
+    <section
       className={jakartaSans.className}
       style={{
         minHeight: "100vh",
@@ -428,7 +429,9 @@ export default function Home() {
           loading="eager"
         />
       </div>
-    </div>
+    </section>
+    <UnifyFinancesSection />
+    </>
   );
 }
 
