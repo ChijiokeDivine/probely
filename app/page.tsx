@@ -5,24 +5,12 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import UnifyFinancesSection from "./components/UnifyFinancesSection";
+import FlowmapBackground from "./components/Flowmapbackground";
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
-
-// Custom hook to get viewport width
-function useViewportWidth() {
-  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
-
-  useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  
-  return width;
-}
 
 // Custom hook to detect when an element is in view
 function useInView(options = {}) {
@@ -54,20 +42,18 @@ function useInView(options = {}) {
 
 export default function Home() {
   const [qrHovered, setQrHovered] = useState(false);
-  const viewportWidth = useViewportWidth();
-  const isMobile = viewportWidth < 768;
   const [setHeroRef, isHeroInView] = useInView();
   return (
     <>
     <section
-      className={jakartaSans.className}
+      className={`${jakartaSans.className} relative overflow-hidden min-h-screen`}
       style={{
-        minHeight: "100vh",
-        background: "url('/image.webp') center/cover no-repeat, #1A0E07",
-        position: "relative",
-        overflow: "hidden",
+        background: "#1A0E07",
       }}
     >
+      {/* Animated flowmap-distorted background */}
+      <FlowmapBackground src="/image.webp" className="z-0" />
+
     <style>{`
           .ready .anim-h1 {
             animation: revealUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
@@ -110,32 +96,27 @@ export default function Home() {
               clip-path: inset(0 0% 0 0);
             }
           }
+          @keyframes corgiBounce {
+            0%, 100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-12px);
+            }
+          }
       `}
     </style>
-     
+
 
       {/* ══════════════ NAVBAR ══════════════ */}
       <nav
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: isMobile ? "0 20px" : "0 48px",
-          height: "78px",
-          position: "relative",
-          zIndex: 20,
-        }}
+        className="flex items-center justify-between relative z-20 px-5 md:px-12"
+        style={{ height: "78px" }}
       >
         {/* Logo */}
         <a
           href="#"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            textDecoration: "none",
-            flexShrink: 0,
-          }}
+          className="flex items-center gap-2 no-underline flex-shrink-0"
         >
           {/* MoonPay logomark: planet dot */}
           <svg
@@ -161,81 +142,55 @@ export default function Home() {
           </span>
         </a>
 
-        {/* Center nav links - hide on mobile */}
-        {!isMobile && (
-          <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-            {/* Section tabs */}
-      
-            <NavLink href="#" opacity={0.78}>
-              How it works
-            </NavLink>
-            <NavLink href="#" opacity={0.78}>
-              Features
-            </NavLink>
-            <NavLink href="#" opacity={0.78}>
-              Security
-            </NavLink>
-
-         
-          </div>
-        )}
+        {/* Center nav links - hidden on mobile */}
+        <div className="hidden md:flex items-center gap-0.5">
+          <NavLink href="#" opacity={0.78}>
+            How it works
+          </NavLink>
+          <NavLink href="#" opacity={0.78}>
+            Features
+          </NavLink>
+          <NavLink href="#" opacity={0.78}>
+            Security
+          </NavLink>
+        </div>
 
         {/* Right actions */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            flexShrink: 0,
-          }}
-        >
-          {/* Globe / language - hide on mobile */}
-          {!isMobile && (
-            <button
-              aria-label="Select language"
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "rgba(255,255,255,0.72)",
-                padding: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* Globe / language - hidden on mobile */}
+          <button
+            aria-label="Select language"
+            className="hidden md:flex items-center justify-center bg-none border-none cursor-pointer p-2"
+            style={{ color: "rgba(255,255,255,0.72)" }}
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-              </svg>
-            </button>
-          )}
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+          </button>
 
           {/* Get started */}
-
           <Link href="/signup">
             <button
+              className="px-5 py-[9px] md:px-[26px] md:py-[11px] text-sm md:text-[15px] whitespace-nowrap"
               style={{
                 background: "#fff",
                 color: "#1A0E07",
                 border: "1px solid #D9D9D9",
                 borderRadius: "999px",
-                padding: isMobile ? "9px 20px" : "11px 26px",
-                fontSize: isMobile ? "14px" : "15px",
                 fontWeight: "600",
                 cursor: "pointer",
                 fontFamily: "inherit",
-                whiteSpace: "nowrap",
                 letterSpacing: "-0.1px",
                 boxShadow: "0 4px 0 #CFCFCF",
                 transition: "transform 0.08s ease, box-shadow 0.08s ease",
@@ -261,40 +216,18 @@ export default function Home() {
 
       {/* ══════════════ HERO SECTION ══════════════ */}
       <section
+        className="flex items-start md:items-center justify-center md:justify-start relative z-[5] px-5 md:px-12 py-10 md:py-0"
         style={{
-          display: "flex",
-          alignItems: isMobile ? "flex-start" : "center",
-          justifyContent: isMobile ? "center" : "flex-start",
           minHeight: "calc(100vh - 78px)",
-          padding: isMobile ? "40px 20px" : "0 48px",
-          position: "relative",
-          zIndex: 5,
         }}
-        
-
       >
         {/* ── Left: text content ── */}
-        <div
-          style={{
-            flex: isMobile ? "0 0 100%" : "0 0 46%",
-            maxWidth: isMobile ? "100%" : "46%",
-            paddingBottom: isMobile ? "40px" : "72px",
-            paddingTop: isMobile ? "40px" : "12px",
-            textAlign: isMobile ? "center" : "left",
-          }}
-        >
+        <div className="flex-none w-full md:w-[46%] max-w-full md:max-w-[46%] pb-10 md:pb-[72px] pt-10 md:pt-3 text-center md:text-left">
           {/* Trust badge */}
-          <div
+          <div className="inline-flex items-center rounded-[50px] overflow-hidden flex-wrap justify-center mb-7 md:mb-[38px]"
             style={{
-              display: "inline-flex",
-              alignItems: "center",
               background: "rgba(255,255,255,0.065)",
               border: "1px solid rgba(255,255,255,0.11)",
-              borderRadius: "50px",
-              marginBottom: isMobile ? "28px" : "38px",
-              overflow: "hidden",
-              flexWrap: "wrap",
-              justifyContent: "center",
             }}
           >
             <span
@@ -313,37 +246,30 @@ export default function Home() {
           {/* Headline */}
           <div ref={setHeroRef} className={isHeroInView ? "ready" : ""}>
             <h1
+              className="anim-h1 text-[clamp(36px,10vw,48px)] md:text-[clamp(54px,6.2vw,86px)] tracking-[-1.5px] md:tracking-[-2.8px] mb-5 md:mb-[26px]"
               style={{
                 color: "white",
-                fontSize: isMobile ? "clamp(36px, 10vw, 48px)" : "clamp(54px, 6.2vw, 86px)",
                 fontWeight: "300",
                 lineHeight: "1.04",
-                letterSpacing: isMobile ? "-1.5px" : "-2.8px",
-                margin: isMobile ? "0 0 20px 0" : "0 0 26px 0",
                 wordBreak: "keep-all",
               }}
-              className="anim-h1"
-          
             >
-              Better hiring 
+              Better hiring
               <br />
               starts here
             </h1>
 
             {/* Subtitle */}
             <p
+              className="anim-p text-[15px] md:text-[17.5px] mx-auto md:mx-0 mb-8 md:mb-[46px] max-w-full md:max-w-[420px]"
               style={{
                 color: "rgba(255, 255, 255, 0.93)",
-                fontSize: isMobile ? "15px" : "17.5px",
                 fontWeight: "400",
                 lineHeight: "1.65",
-                margin: isMobile ? "0 auto 32px auto" : "0 0 46px 0",
-                maxWidth: isMobile ? "100%" : "420px",
                 letterSpacing: "0px",
               }}
-              className="anim-p"
             >
-              Collect unbiased interview feedback and make 
+              Collect unbiased interview feedback and make
               <br className="hidden md:block" /> more confident hiring decisions.
             </p>
           </div>
@@ -351,37 +277,27 @@ export default function Home() {
           {/* CTA Button */}
           <Link href="/signup">
             <button
+              className="px-5 py-[9px] md:px-[26px] md:py-[11px] text-sm md:text-[15px] whitespace-nowrap"
               style={{
                 background: "#fff",
                 color: "#1A0E07",
-
                 border: "1px solid #D9D9D9",
                 borderRadius: "999px",
-
-                padding: isMobile ? "9px 20px" : "11px 26px",
-                fontSize: isMobile ? "14px" : "15px",
                 fontWeight: "600",
-
                 cursor: "pointer",
                 fontFamily: "inherit",
-                whiteSpace: "nowrap",
                 letterSpacing: "-0.1px",
-
-                // The magic
                 boxShadow: "0 4px 0 #CFCFCF",
-
                 transition: "transform 0.08s ease, box-shadow 0.08s ease",
               }}
               onMouseDown={(e) => {
                 e.currentTarget.style.transform = "translateY(4px)";
                 e.currentTarget.style.boxShadow = "0 0 0 #CFCFCF";
               }}
-
               onMouseUp={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
                 e.currentTarget.style.boxShadow = "0 4px 0 #CFCFCF";
               }}
-
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
                 e.currentTarget.style.boxShadow = "0 4px 0 #CFCFCF";
@@ -390,33 +306,15 @@ export default function Home() {
               Get started
             </button>
           </Link>
-
         </div>
-
-   
       </section>
-
-
 
       {/* ── QR code — bottom right ── */}
       <div
         onMouseEnter={() => setQrHovered(true)}
         onMouseLeave={() => setQrHovered(false)}
+        className="absolute bottom-[15px] right-[15px] md:bottom-5 md:right-5 w-[70px] h-[70px] md:w-[90px] md:h-[90px] bg-white rounded-[10px] border-[7px] md:border-[10px] border-black/[0.89] flex items-center justify-center p-[6px] md:p-2 z-20 cursor-pointer"
         style={{
-          position: "absolute",
-          bottom: isMobile ? "15px" : "20px",
-          right: isMobile ? "15px" : "20px",
-          width: isMobile ? "70px" : "90px",
-          height: isMobile ? "70px" : "90px",
-          background: "white",
-          borderRadius: "10px",
-          border: isMobile ? "7px solid rgba(0, 0, 0, 0.89)" : "10px solid rgba(0, 0, 0, 0.89)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: isMobile ? "6px" : "8px",
-          zIndex: 20,
-          cursor: "pointer",
           transform: qrHovered ? "scale(1.1)" : "scale(1)",
           transition: "transform 0.2s ease-out",
         }}
@@ -424,13 +322,68 @@ export default function Home() {
         <Image
           src="/qr-code.png"
           alt="QR code"
-          width={isMobile ? 58 : 74}
-          height={isMobile ? 58 : 74}
+          width={74}
+          height={74}
           loading="eager"
+          className="w-[58px] h-[58px] md:w-[74px] md:h-[74px]"
         />
       </div>
     </section>
     <UnifyFinancesSection />
+
+    {/* Corgi Insurance Section */}
+    <section
+      className={`${jakartaSans.className} min-h-screen flex flex-col items-center justify-center px-5 py-[60px]`}
+      style={{
+        background: "#2a2a2a",
+      }}
+    >
+      {/* Headline */}
+      <h2
+        className="text-center max-w-[900px] mb-10"
+        style={{
+          color: "white",
+          fontSize: "clamp(28px, 5vw, 44px)",
+          fontWeight: "700",
+          lineHeight: "1.2",
+        }}
+      >
+        One bad hire costs 30% of their annual salary. Probely is priced against that risk, not your headcount.
+      </h2>
+
+      {/* Buttons Row */}
+      <div className="flex gap-4 flex-wrap justify-center">
+        <button
+          style={{
+            background: "white",
+            color: "#1a1a1a",
+            border: "1px solid #e0e0e0",
+            borderRadius: "999px",
+            padding: "14px 28px",
+            fontSize: "16px",
+            fontWeight: "600",
+            cursor: "pointer",
+            fontFamily: "inherit",
+            boxShadow: "0 4px 0 #d0d0d0",
+            transition: "transform 0.08s ease, box-shadow 0.08s ease",
+          }}
+          onMouseDown={(e) => {
+            e.currentTarget.style.transform = "translateY(4px)";
+            e.currentTarget.style.boxShadow = "0 0 0 #d0d0d0";
+          }}
+          onMouseUp={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 4px 0 #d0d0d0";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 4px 0 #d0d0d0";
+          }}
+        >
+          Get started
+        </button>
+      </div>
+    </section>
     </>
   );
 }
