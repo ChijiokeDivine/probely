@@ -6,6 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import UnifyFinancesSection from "./components/UnifyFinancesSection";
 import FlowmapBackground from "./components/Flowmapbackground";
+import LogoTicker from "./components/LogoTicker";
+
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
@@ -329,6 +331,7 @@ export default function Home() {
         />
       </div>
     </section>
+    <LogoTicker />
     <UnifyFinancesSection />
 
     {/* Corgi Insurance Section */}
