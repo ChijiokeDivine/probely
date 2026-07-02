@@ -274,8 +274,14 @@ export default function FlowmapBackground({
       const loseContextExt = gl.getExtension("WEBGL_lose_context");
       if (loseContextExt) loseContextExt.loseContext();
 
-      if (gl.canvas.parentElement === container) {
-        container.removeChild(gl.canvas);
+
+      try {
+        if (gl.canvas.parentElement === container) {
+          container.removeChild(gl.canvas);
+        }
+      } catch {
+        // Container may already have been detached by React during a fast
+        // route change/unmount — safe to ignore, the node is gone either way.
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

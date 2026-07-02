@@ -16,6 +16,7 @@ export default function RootLayout({
       <body
         style={{ margin: 0, padding: 0, background: "#1A0E07" }}
         className="min-h-full"
+        suppressHydrationWarning={true}
       >
         {children}
       </body>

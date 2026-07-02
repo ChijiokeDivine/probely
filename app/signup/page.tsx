@@ -14,10 +14,11 @@ const jakartaSans = Plus_Jakarta_Sans({
 
 // Custom hook to get viewport width
 function useViewportWidth() {
-  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [width, setWidth] = useState(1200); // SSR-safe default; real width applied post-mount
   
   useEffect(() => {
     const handleResize = () => setWidth(window.innerWidth);
+    handleResize(); // sync to actual width once mounted
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -97,7 +98,15 @@ export default function SignupPage() {
   }
 
   return (
-    <div className={`min-h-screen w-full flex flex-col ${mounted ? "ready" : ""} ${jakartaSans.className}`}>
+      <div
+        className={[
+          "min-h-screen w-full flex flex-col",
+          mounted && "ready",
+          jakartaSans.className,
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        >
       <style>{`
         .anim-logo, .anim-welcome, .anim-form-header, .anim-form-field, .anim-form-button, .anim-form-link { opacity: 0; }
         input:focus { outline: none !important; box-shadow: none !important; }

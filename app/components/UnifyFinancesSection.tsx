@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -13,6 +14,7 @@ const jakartaSans = Plus_Jakarta_Sans({
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(useGSAP);
 }
 
 const cardData = [
@@ -75,95 +77,91 @@ export default function UnifyFinancesSection() {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const headlineRef = useRef<HTMLHeadingElement | null>(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const cards = cardRefs.current.filter(Boolean);
+  useGSAP(() => {
+    const cards = cardRefs.current.filter(Boolean);
 
-      // anchor every card's CENTER at its own top/left point
-      gsap.set(cards, { 
-        xPercent: -50, 
-        yPercent: -50, 
-        opacity: 0 // Start hidden
+    // anchor every card's CENTER at its own top/left point
+    gsap.set(cards, {
+      xPercent: -50,
+      yPercent: -50,
+      opacity: 0, // Start hidden
+    });
+
+    // Set initial off-screen positions
+    cards.forEach((card, index) => {
+      const data = cardData[index];
+      gsap.set(card, {
+        top: data.initialTop,
+        left: data.initialLeft,
       });
+    });
 
-      // Set initial off-screen positions
-      cards.forEach((card, index) => {
-        const data = cardData[index];
-        gsap.set(card, {
-          top: data.initialTop,
-          left: data.initialLeft
-        });
-      });
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "+=150%", // 1.5 viewport-heights to cover both animations
+        scrub: 1,
+        pin: true,
+        anticipatePin: 1,
+        // markers: true, // uncomment while debugging
+      },
+    });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "+=150%", // 1.5 viewport-heights to cover both animations
-          scrub: 1,
-          pin: true,
-          anticipatePin: 1,
-          // markers: true, // uncomment while debugging
+    // First animation: Slide cards into view
+    cards.forEach((card, index) => {
+      const data = cardData[index];
+      tl.to(
+        card,
+        {
+          left: data.left,
+          top: data.top,
+          opacity: 1,
+          ease: "power3.out",
+          duration: 0.5,
         },
-      });
+        0 // Start all in-view animations at the same time
+      );
+    });
 
-      // First animation: Slide cards into view
-      cards.forEach((card, index) => {
-        const data = cardData[index];
-        tl.to(
-          card,
-          {
-            left: data.left,
-            top: data.top,
-            opacity: 1,
-            ease: "power3.out",
-            duration: 0.5,
-          },
-          0 // Start all in-view animations at the same time
-        );
-      });
+    // Second animation: Converge to center and fade out
+    cards.forEach((card) => {
+      tl.to(
+        card,
+        {
+          left: "50%",
+          top: "50%",
+          scale: 0.25,
+          opacity: 0,
+          ease: "power2.inOut",
+          duration: 1,
+        },
+        0.5 // Start converging after in-view animation completes
+      );
+    });
 
-      // Second animation: Converge to center and fade out
-      cards.forEach((card) => {
-        tl.to(
-          card,
-          {
-            left: "50%",
-            top: "50%",
-            scale: 0.25,
-            opacity: 0,
-            ease: "power2.inOut",
-            duration: 1,
-          },
-          0.5 // Start converging after in-view animation completes
-        );
-      });
-
-      // Animate headline color
-      if (headlineRef.current) {
-        tl.to(
-          headlineRef.current,
-          {
-            color: "#3b82f6",
-            ease: "power2.inOut",
-            duration: 0.5
-          },
-          0.3 // Start color change 30% through
-        );
-        tl.to(
-          headlineRef.current,
-          {
-            color: "#22c55e",
-            ease: "power2.inOut",
-            duration: 0.5
-          },
-          0.8 // Change to black at 80% through
-        );
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+    // Animate headline color
+    if (headlineRef.current) {
+      tl.to(
+        headlineRef.current,
+        {
+          color: "#3b82f6",
+          ease: "power2.inOut",
+          duration: 0.5,
+        },
+        0.3 // Start color change 30% through
+      );
+      tl.to(
+        headlineRef.current,
+        {
+          color: "#22c55e",
+          ease: "power2.inOut",
+          duration: 0.5,
+        },
+        0.8 // Change to black at 80% through
+      );
+    }
+  }, { scope: sectionRef });
 
   return (
     <section
