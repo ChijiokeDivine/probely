@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 
@@ -55,8 +55,9 @@ const MOCK_CANDIDATES = [
   { id: "c2", full_name: "Mike Johnson", candidate_ref: "cand_def456" },
 ];
 
-export default function NewReviewPage() {
+function NewReviewContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState(1);
   const [candidates, setCandidates] = useState(MOCK_CANDIDATES);
   const [loading, setLoading] = useState(false);
@@ -82,6 +83,30 @@ export default function NewReviewPage() {
     },
     notesForReviewers: "",
   });
+
+  useEffect(() => {
+    const templateParam = searchParams.get("template");
+    if (templateParam) {
+      try {
+        const template = JSON.parse(templateParam);
+        setFormData((prev) => ({
+          ...prev,
+          role: template.role || prev.role,
+          categoryWeights: {
+            problemSolving: (template.categoryWeights?.problemSolving || 25) * 100,
+            technicalDepth: (template.categoryWeights?.technicalDepth || 25) * 100,
+            communication: (template.categoryWeights?.communication || 20) * 100,
+            collaboration: (template.categoryWeights?.collaboration || 15) * 100,
+            cultureGrowth: (template.categoryWeights?.cultureGrowth || 15) * 100,
+          },
+          autoAdvanceRule: template.autoAdvanceRule || prev.autoAdvanceRule,
+          notesForReviewers: template.notesForReviewers || prev.notesForReviewers,
+        }));
+      } catch (e) {
+        console.error("Failed to parse template data:", e);
+      }
+    }
+  }, [searchParams]);
 
   // Helper function to convert basis points to percentage
   const bpsToPct = (bps: number) => (bps / 100).toFixed(0);
@@ -433,5 +458,13 @@ export default function NewReviewPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewReviewPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">Loading...</div>}>
+      <NewReviewContent />
+    </Suspense>
   );
 }
