@@ -12,7 +12,9 @@
 --   wallet_status text
 -- =============================================================================
 alter table public.profiles
-  add column if not exists full_name text;
+  add column if not exists full_name text,
+  add column if not exists company text,
+  add column if not exists role text default 'admin';
 
 -- =============================================================================
 -- app_wallets — system-owned wallets (currently just the 'operator' wallet
@@ -500,3 +502,17 @@ drop trigger if exists set_chain_sync_state_updated_at on public.chain_sync_stat
 create trigger set_chain_sync_state_updated_at
   before update on public.chain_sync_state
   for each row execute procedure public.set_updated_at();
+
+-- =============================================================================
+-- PROFILES POLICIES (idempotent)
+-- =============================================================================
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'profiles'
+      and policyname = 'profiles_update_own'
+  ) then
+    create policy "profiles_update_own" on public.profiles for update using (auth.uid() = id);
+  end if;
+end $$;
