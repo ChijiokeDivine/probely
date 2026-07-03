@@ -233,7 +233,25 @@ export default function Sidebar({
         <div className={`mt-4 flex flex-col gap-0.5 ${collapsed ? "px-2" : "px-3"}`}>
           <Link
             href="/reviews/new"
-            className={`flex items-center ${collapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-full text-[14px] font-semibold text-white bg-[#1A0E07] hover:bg-[#2b1a0e] transition-colors`}
+            className={`flex items-center ${collapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5  text-[14px]
+                rounded-full
+                border border-neutral-700
+                bg-neutral-900
+                font-semibold
+                text-white
+
+                shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_0_rgb(38,38,38)]
+
+                transition-all
+                duration-75
+
+                hover:bg-neutral-800
+
+                active:translate-y-1
+                active:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]
+
+                disabled:opacity-60
+                disabled:cursor-not-allowed`}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
             {!collapsed && "New review"}

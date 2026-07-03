@@ -1,7 +1,7 @@
 import { getAddress, parseEventLogs, type Address } from "viem";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { HttpError } from "@/lib/auth/authz";
-import { getPublicClient, getWriteContract } from "@/lib/contracts/client";
+import { getPublicClient, getWriteContract, getReadContract } from "@/lib/contracts/client";
 import { BlindReviewAbi } from "../contracts/BlindReview.abi";
 import { getWalletClientForProfile } from "@/lib/privy/viemAccount";
 import { ensureWalletFunded } from "@/lib/services/walletFunding";
@@ -16,6 +16,61 @@ import {
   AutoAdvanceAction,
 } from "@/lib/contracts/constants";
 import type { AutoAdvanceRule, CategoryWeights } from "@/lib/contracts/types";
+
+export async function getInviteByToken(token: string) {
+  const admin = createAdminClient();
+  const { data: reviewerRow, error: reviewerError } = await admin
+    .from("review_reviewers")
+    .select("*, reviews(*)")
+    .eq("id", token)
+    .eq("is_active", true)
+    .single();
+
+  if (reviewerError || !reviewerRow) throw new HttpError(404, "Invite not found");
+
+  return {
+    role: reviewerRow.reviews.role,
+    deadline: reviewerRow.reviews.deadline,
+    totalReviewers: reviewerRow.reviews.reviewer_count,
+    reviewId: reviewerRow.review_id,
+    alreadySubmitted: reviewerRow.has_submitted,
+  };
+}
+
+export async function declineInvite(token: string, reason?: string) {
+  const admin = createAdminClient();
+  // TODO: In a real implementation, we might want to add a 'declined' status to review_reviewers
+  // For now, we're just marking it inactive
+  const { data, error } = await admin
+    .from("review_reviewers")
+    .update({ is_active: false })
+    .eq("id", token)
+    .select("*")
+    .single();
+
+  if (error || !data) throw new HttpError(404, "Invite not found");
+  return { success: true };
+}
+
+export async function getScorecardByToken(token: string) {
+  const admin = createAdminClient();
+  const { data: reviewerRow, error: reviewerError } = await admin
+    .from("review_reviewers")
+    .select("*, reviews(*)")
+    .eq("id", token)
+    .eq("is_active", true)
+    .single();
+
+  if (reviewerError || !reviewerRow) throw new HttpError(404, "Scorecard not found");
+
+  return {
+    reviewId: reviewerRow.review_id,
+    role: reviewerRow.reviews.role,
+    deadline: reviewerRow.reviews.deadline,
+    categoryWeights: reviewerRow.reviews.category_weights,
+    alreadySubmitted: reviewerRow.has_submitted,
+  };
+}
 
 const ZERO_AUTO_ADVANCE_RULE: AutoAdvanceRule = {
   enabled: false,

@@ -378,7 +378,25 @@ export default function DashboardPage() {
             <p className="text-[14px] text-black/50 mb-4 max-w-[280px]">
               No reviews yet. Create your first review.
             </p>
-            <Link href="/reviews/new" className="px-4 py-2 rounded-full text-[13.5px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e]">
+            <Link href="/reviews/new" className="px-4 py-2 rounded-full
+                rounded-full
+                border border-neutral-700
+                bg-neutral-900
+                font-semibold
+                text-white
+                text-[13.5px]
+                shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_0_rgb(38,38,38)]
+
+                transition-all
+                duration-75
+
+                hover:bg-neutral-800
+
+                active:translate-y-1
+                active:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]
+
+                disabled:opacity-60
+                disabled:cursor-not-allowed">
               Create review
             </Link>
           </div>
