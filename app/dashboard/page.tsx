@@ -37,22 +37,22 @@ const PRESETS = [
     image: "/programmer.webp",
   },
   {
-    key: "product",
-    label: "Product",
+    key: "sales",
+    label: "Sales",
     weights: "15 / 10 / 25 / 25 / 25",
-    image: "/product.webp",
+    image: "/sales.webp",
   },
   {
     key: "design",
     label: "Design",
     weights: "15 / 20 / 25 / 20 / 20",
-    image: "/designer.webp",
+    image: "/design.webp",
   },
   {
-    key: "operations",
-    label: "Operations",
+    key: "management",
+    label: "Management",
     weights: "20 / 15 / 25 / 20 / 20",
-    image: "/operations.webp",
+    image: "/management.webp",
   },
 ];
 

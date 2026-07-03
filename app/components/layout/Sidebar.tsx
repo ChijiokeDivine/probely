@@ -88,11 +88,15 @@ export default function Sidebar({
   unreadCount = 0,
   mobileOpen = false,
   onCloseMobile,
+  collapsed = false,
+  onToggleCollapse,
 }: {
   profile?: Profile;
   unreadCount?: number;
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -133,61 +137,106 @@ export default function Sidebar({
       )}
 
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen w-[240px] shrink-0 z-50 lg:z-0 flex flex-col
-        bg-[#FFFFFF] border-r border-black/[0.08] transition-transform duration-200 ease-out
-        ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+        className={`fixed lg:sticky top-0 left-0 h-screen shrink-0 z-50 lg:z-0 flex flex-col
+        bg-[#FFFFFF] border-r border-black/[0.08] transition-all duration-300 ease-out
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0
+        ${collapsed ? "w-[80px]" : "w-[240px]"}`}
       >
         {/* Workspace switcher */}
-        <div className="flex items-center gap-2.5 px-5 pt-5 pb-4">
-          <div className="w-8 h-8 rounded-lg bg-[#1A0E07] flex items-center justify-center shrink-0">
-            <svg
-            width="27"
-            height="27"
-            viewBox="0 0 27 27"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="9.5" cy="13.5" r="7.5" fill="white" />
-            <circle cx="9.5" cy="13.5" r="3.4" fill="#1A0E07" />
-            <circle cx="20" cy="13.5" r="4.8" fill="rgba(255,255,255,0.52)" />
-          </svg>
-          </div>
-          <div className="min-w-0">
-            <div className="text-[13.5px] font-semibold text-[#1A0E07] truncate">Probely</div>
-
-          </div>
-          <button className="ml-auto text-black/35 hover:text-black/60 lg:hidden" onClick={onCloseMobile} aria-label="Close menu">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
-          </button>
+        <div className={`flex items-center gap-2.5 ${collapsed ? "px-2" : "px-5"} pt-5 pb-4`}>
+          {collapsed && onToggleCollapse ? (
+            <button
+              onClick={onToggleCollapse}
+              className="mx-auto w-8 h-8 rounded-lg bg-[#1A0E07] flex items-center justify-center shrink-0 hover:bg-[#2b1a0e] transition-colors"
+              aria-label="Expand sidebar"
+            >
+              <svg
+                width="27"
+                height="27"
+                viewBox="0 0 27 27"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="9.5" cy="13.5" r="7.5" fill="white" />
+                <circle cx="9.5" cy="13.5" r="3.4" fill="#1A0E07" />
+                <circle cx="20" cy="13.5" r="4.8" fill="rgba(255,255,255,0.52)" />
+              </svg>
+            </button>
+          ) : (
+            <>
+              <div className="w-8 h-8 rounded-lg bg-[#1A0E07] flex items-center justify-center shrink-0">
+                <svg
+                  width="27"
+                  height="27"
+                  viewBox="0 0 27 27"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="9.5" cy="13.5" r="7.5" fill="white" />
+                  <circle cx="9.5" cy="13.5" r="3.4" fill="#1A0E07" />
+                  <circle cx="20" cy="13.5" r="4.8" fill="rgba(255,255,255,0.52)" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <div className="text-[13.5px] font-semibold text-[#1A0E07] truncate">Probely</div>
+              </div>
+              <div className="ml-auto flex items-center gap-1">
+                {onToggleCollapse && (
+                  <button
+                    onClick={onToggleCollapse}
+                    className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg hover:bg-black/[0.04] text-black/45"
+                    aria-label="Collapse sidebar"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M11 19l-7-7 7-7" />
+                      <path d="M18 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                )}
+                <button className="text-black/35 hover:text-black/60 lg:hidden" onClick={onCloseMobile} aria-label="Close menu">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Primary nav */}
-        <nav className="px-3 flex flex-col gap-0.5">
+        <nav className={`flex flex-col gap-0.5 ${collapsed ? "px-2" : "px-3"}`}>
           {NAV_ITEMS.map((item) => {
             const active = pathname === item.href || pathname?.startsWith(item.href + "/");
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 md:my-1 rounded-[10px] text-[14px] font-medium transition-colors
+                className={`flex items-center ${collapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 md:my-1 rounded-[10px] text-[14px] font-medium transition-colors
                 ${active ? "bg-white text-[#1A0E07] " : "text-black/60 hover:bg-black/[0.04] hover:text-black/80"}`}
               >
                 <span className={active ? "text-[#1A0E07]" : "text-black/45"}>{item.icon(!!active)}</span>
-                {item.label}
+                {!collapsed && item.label}
               </Link>
             );
           })}
         </nav>
 
-        <div className="mt-4 mx-5 h-px bg-black/[0.07]" />
+        <div className={`mt-4 ${collapsed ? "mx-2" : "mx-5"} h-px bg-black/[0.07]"`} />
 
-        <div className="px-3 mt-4 flex flex-col gap-0.5">
+        <div className={`mt-4 flex flex-col gap-0.5 ${collapsed ? "px-2" : "px-3"}`}>
           <Link
             href="/reviews/new"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-full text-[14px] font-semibold text-white bg-[#1A0E07] hover:bg-[#2b1a0e] transition-colors justify-center"
+            className={`flex items-center ${collapsed ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-full text-[14px] font-semibold text-white bg-[#1A0E07] hover:bg-[#2b1a0e] transition-colors`}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-            New review
+            {!collapsed && "New review"}
           </Link>
         </div>
 
@@ -223,28 +272,37 @@ export default function Sidebar({
         <div className="flex-1" />
 
         {/* User section */}
-        <div className="px-3 pb-4">
+        <div className={`pb-4 ${collapsed ? "px-2" : "px-3"}`}>
           {/* Desktop: show name with logout button */}
           <button
             onClick={handleLogout}
             disabled={signingOut}
-            className="hidden lg:flex w-full items-center justify-between gap-2.5 px-3 py-2.5 rounded-[10px] hover:bg-black/[0.04] hover:text-red-700"
+            className={`hidden lg:flex w-full items-center ${collapsed ? "justify-center px-0" : "justify-between gap-2.5 px-3"} py-2.5 rounded-[10px] hover:bg-black/[0.04] hover:text-red-700`}
           >
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#1A0E07] text-white text-[12px] font-bold flex items-center justify-center shrink-0 relative">
-                {initials}
-              </div>
-              <div className="min-w-0">
-                <div className="text-[13px] font-semibold text-[#1A0E07] truncate">
-                  {profile?.full_name || "Your account"}
+            {collapsed ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-black/45">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <path d="M16 17l5-5-5-5M21 12H9" />
+              </svg>
+            ) : (
+              <>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-[#1A0E07] text-white text-[12px] font-bold flex items-center justify-center shrink-0 relative">
+                    {initials}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-semibold text-[#1A0E07] truncate">
+                      {profile?.full_name || "Your account"}
+                    </div>
+                    <div className="text-[11px] text-black/40 truncate">{profile?.email}</div>
+                  </div>
                 </div>
-                <div className="text-[11px] text-black/40 truncate">{profile?.email}</div>
-              </div>
-            </div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-black/45">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <path d="M16 17l5-5-5-5M21 12H9" />
-            </svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-black/45">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <path d="M16 17l5-5-5-5M21 12H9" />
+                </svg>
+              </>
+            )}
           </button>
 
           {/* Mobile only: simple logout button */}

@@ -28,6 +28,7 @@ export default function DashboardShell({
 }) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -90,6 +91,8 @@ export default function DashboardShell({
         unreadCount={unreadCount}
         mobileOpen={mobileOpen}
         onCloseMobile={() => setMobileOpen(false)}
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed(!collapsed)}
       />
 
       <div className="flex-1 min-w-0 flex flex-col">
