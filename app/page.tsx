@@ -314,6 +314,7 @@ export default function Home() {
               src="/main.webp"
               alt="Collect Feedback"
               fill
+              sizes="100vw"
               className="object-cover"
             />
           </div>
@@ -338,7 +339,7 @@ export default function Home() {
           width={74}
           height={74}
           loading="eager"
-          className="w-[58px] h-[58px] md:w-[74px] md:h-[74px]"
+          className="w-[58px] h-[58px] md:w-[74px] md:h-[74px] aspect-square"
         />
       </div>
     </section>
@@ -361,6 +362,7 @@ export default function Home() {
                 src="/reviews.webp"
                 alt="Create Reviews"
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
             </div>
@@ -391,6 +393,7 @@ export default function Home() {
                 src="/feedback.webp"
                 alt="Collect Feedback"
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
             </div>
@@ -421,6 +424,7 @@ export default function Home() {
                 src="/templatepage.webp"
                 alt="Analytics Dashboard"
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
             </div>
