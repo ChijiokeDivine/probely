@@ -248,7 +248,7 @@ export default function OnboardingPage() {
               </Link>
             </div>
             <div className="anim-welcome">
-              <h2 className="text-4xl font-normal leading-tight mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              <h2 className="text-4xl font-normal leading-tight mb-4">
                 {role === "reviewer" ? (
                   <>Your read on this<br />candidate matters.</>
                 ) : (

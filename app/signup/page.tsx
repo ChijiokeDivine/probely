@@ -423,32 +423,11 @@ export default function SignupPage() {
               flexShrink: 0,
             }}
           >
-            {/* MoonPay logomark: planet dot */}
-            <svg
-              width="27"
-              height="27"
-              viewBox="0 0 27 27"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle cx="9.5" cy="13.5" r="7.5" fill="white" />
-              <circle cx="9.5" cy="13.5" r="3.4" fill="#1A0E07" />
-              <circle cx="20" cy="13.5" r="4.8" fill="rgba(255,255,255,0.52)" />
-            </svg>
-            <span
-              style={{
-                color: "white",
-                fontSize: "17.5px",
-                fontWeight: "700",
-                letterSpacing: "-0.3px",
-              }}
-            >
-              Probely
-            </span>
+       
           </Link>
         </div>
           <div className="anim-welcome">
-            <h2 className="text-4xl font-normal leading-tight mb-4" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            <h2 className="text-4xl font-normal leading-tight mb-4">
               The future of hiring<br />decisions.
             </h2>
             <p className="text-white/80 leading-relaxed">

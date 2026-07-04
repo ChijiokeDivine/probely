@@ -333,7 +333,107 @@ export default function Home() {
     </section>
     <LogoTicker />
     <UnifyFinancesSection />
+    
+    {/* Features Cards Section */}
+    <section
+      className={`${jakartaSans.className} min-h-[600px] flex flex-col items-center justify-center px-5 py-[60px]`}
+      style={{
+        background: "#ffffff",
+      }}
+    >
+      <div className="w-full max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Card 1 */}
+          <div className="bg-[#fafafa] rounded-[32px] overflow-hidden">
+            <div className="h-64 overflow-hidden relative bg-gradient-to-br from-[#1A0E07] to-[#3a2618]">
+              {/* Placeholder image */}
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-3/4 h-3/4 bg-white/10 rounded-2xl backdrop-blur-sm flex items-center justify-center">
+                  <span className="text-white/60 text-sm font-medium">Screenshot Preview</span>
+                </div>
+              </div>
+            </div>
+            <div className="p-8">
+              <h3 className="text-[22px] font-bold text-[#1A0E07] mb-3">Create Reviews</h3>
+              <p className="text-[16px] text-black/70 mb-8 leading-relaxed">
+                Set up structured interviews with custom scoring criteria, category weights, and auto-advance rules for consistent hiring.
+              </p>
+              <button
+                className="px-6 py-3 text-sm font-semibold"
+                style={{
+                  background: "#1A0E07",
+                  color: "white",
+                  borderRadius: "999px",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                }}
+              >
+                Learn more
+              </button>
+            </div>
+          </div>
 
+          {/* Card 2 */}
+          <div className="bg-[#fafafa] rounded-[32px] overflow-hidden">
+            <div className="h-64 overflow-hidden relative bg-gradient-to-br from-[#2a4a7a] to-[#1a2a4a]">
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-3/4 h-3/4 bg-white/10 rounded-2xl backdrop-blur-sm flex items-center justify-center">
+                  <span className="text-white/60 text-sm font-medium">Screenshot Preview</span>
+                </div>
+              </div>
+            </div>
+            <div className="p-8">
+              <h3 className="text-[22px] font-bold text-[#1A0E07] mb-3">Collect Feedback</h3>
+              <p className="text-[16px] text-black/70 mb-8 leading-relaxed">
+                Gather unbiased input from interviewers with blind scoring and encrypted scorecards to ensure fair evaluations.
+              </p>
+              <button
+                className="px-6 py-3 text-sm font-semibold"
+                style={{
+                  background: "#1A0E07",
+                  color: "white",
+                  borderRadius: "999px",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                }}
+              >
+                Learn more
+              </button>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-[#fafafa] rounded-[32px] overflow-hidden">
+            <div className="h-64 overflow-hidden relative bg-gradient-to-br from-[#4a2a6a] to-[#2a1a4a]">
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="w-3/4 h-3/4 bg-white/10 rounded-2xl backdrop-blur-sm flex items-center justify-center">
+                  <span className="text-white/60 text-sm font-medium">Screenshot Preview</span>
+                </div>
+              </div>
+            </div>
+            <div className="p-8">
+              <h3 className="text-[22px] font-bold text-[#1A0E07] mb-3">Analytics Dashboard</h3>
+              <p className="text-[16px] text-black/70 mb-8 leading-relaxed">
+                Track hiring metrics, review turnaround times, and identify top-performing candidates with detailed insights.
+              </p>
+              <button
+                className="px-6 py-3 text-sm font-semibold"
+                style={{
+                  background: "#1A0E07",
+                  color: "white",
+                  borderRadius: "999px",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                }}
+              >
+                Learn more
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     {/* Corgi Insurance Section */}
     <section
       className={`${jakartaSans.className} min-h-screen flex flex-col items-center justify-center px-5 py-[60px]`}
