@@ -59,6 +59,48 @@ export async function listCandidatesForAdmin(createdBy: string) {
   return data;
 }
 
+export interface UpdateCandidateInput {
+  fullName?: string;
+  email?: string | null;
+  notes?: string | null;
+}
+
+export async function updateCandidate(candidateId: string, updatedBy: string, input: UpdateCandidateInput) {
+  const admin = createAdminClient();
+  
+  // First check that the candidate belongs to this admin
+  await getCandidateForAdmin(candidateId, updatedBy);
+
+  const { data, error } = await admin
+    .from("candidates")
+    .update({
+      full_name: input.fullName,
+      email: input.email,
+      notes: input.notes,
+    })
+    .eq("id", candidateId)
+    .select("*")
+    .single();
+
+  if (error) throw new HttpError(500, `Failed to update candidate: ${error.message}`);
+  return data;
+}
+
+export async function deleteCandidate(candidateId: string, deletedBy: string) {
+  const admin = createAdminClient();
+  
+  // First check that the candidate belongs to this admin
+  await getCandidateForAdmin(candidateId, deletedBy);
+
+  const { error } = await admin
+    .from("candidates")
+    .delete()
+    .eq("id", candidateId);
+
+  if (error) throw new HttpError(500, `Failed to delete candidate: ${error.message}`);
+  return true;
+}
+
 export interface CandidateBlindView {
   id: string;
   candidateRef: string;

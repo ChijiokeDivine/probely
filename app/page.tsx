@@ -308,14 +308,25 @@ export default function Home() {
               Get started
             </button>
           </Link>
+
+          <div className="h-64 mt-[50px] overflow-hidden relative md:hidden block rounded-[10px]">
+            <Image
+              src="/main.webp"
+              alt="Collect Feedback"
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
+        
       </section>
+      
 
       {/* ── QR code — bottom right ── */}
       <div
         onMouseEnter={() => setQrHovered(true)}
         onMouseLeave={() => setQrHovered(false)}
-        className="absolute bottom-[15px] right-[15px] md:bottom-5 md:right-5 w-[70px] h-[70px] md:w-[90px] md:h-[90px] bg-white rounded-[10px] border-[7px] md:border-[10px] border-black/[0.89] flex items-center justify-center p-[6px] md:p-2 z-20 cursor-pointer"
+        className="absolute hidden md:block bottom-[15px] right-[15px] md:bottom-5 md:right-5 w-[70px] h-[70px] md:w-[90px] md:h-[90px] bg-white rounded-[10px] border-[7px] md:border-[10px] border-black/[0.89] flex items-center justify-center p-[6px] md:p-2 z-20 cursor-pointer"
         style={{
           transform: qrHovered ? "scale(1.1)" : "scale(1)",
           transition: "transform 0.2s ease-out",
@@ -344,7 +355,7 @@ export default function Home() {
       <div className="w-full max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Card 1 */}
-          <div className="bg-[#fafafa] rounded-[32px] overflow-hidden">
+          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden">
             <div className="h-64 overflow-hidden relative">
               <Image
                 src="/reviews.webp"
@@ -355,7 +366,7 @@ export default function Home() {
             </div>
             <div className="p-8">
               <h3 className="text-[22px] font-bold text-[#1A0E07] mb-3">Create Reviews</h3>
-              <p className="text-[16px] text-black/70 mb-8 leading-relaxed">
+              <p className="text-[14px] text-black/70 mb-8 leading-relaxed">
                 Set up structured interviews with custom scoring criteria, category weights, and auto-advance rules for consistent hiring.
               </p>
               <button
@@ -374,7 +385,7 @@ export default function Home() {
           </div>
 
           {/* Card 2 */}
-          <div className="bg-[#fafafa] rounded-[32px] overflow-hidden">
+          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden">
             <div className="h-64 overflow-hidden relative">
               <Image
                 src="/feedback.webp"
@@ -385,7 +396,7 @@ export default function Home() {
             </div>
             <div className="p-8">
               <h3 className="text-[22px] font-bold text-[#1A0E07] mb-3">Collect Feedback</h3>
-              <p className="text-[16px] text-black/70 mb-8 leading-relaxed">
+              <p className="text-[14px] text-black/70 mb-8 leading-relaxed">
                 Gather unbiased input from interviewers with blind scoring and encrypted scorecards to ensure fair evaluations.
               </p>
               <button
@@ -404,10 +415,10 @@ export default function Home() {
           </div>
 
           {/* Card 3 */}
-          <div className="bg-[#fafafa] rounded-[32px] overflow-hidden">
+          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden">
             <div className="h-64 overflow-hidden relative">
               <Image
-                src="/design.webp"
+                src="/templatepage.webp"
                 alt="Analytics Dashboard"
                 fill
                 className="object-cover"
@@ -415,7 +426,7 @@ export default function Home() {
             </div>
             <div className="p-8">
               <h3 className="text-[22px] font-bold text-[#1A0E07] mb-3">Analytics Dashboard</h3>
-              <p className="text-[16px] text-black/70 mb-8 leading-relaxed">
+              <p className="text-[14px] text-black/70 mb-8 leading-relaxed">
                 Track hiring metrics, review turnaround times, and identify top-performing candidates with detailed insights.
               </p>
               <button
@@ -443,12 +454,23 @@ export default function Home() {
         background: "#2a2a2a",
       }}
     >
+      {/* Image */}
+      <div className="w-full max-w-4xl h-auto relative overflow-hidden rounded-xl mb-10">
+        <Image
+          src="/main.webp"
+          alt="Probely Dashboard"
+          width={1000}
+          height={600}
+          className="w-full h-auto object-contain"
+        />
+      </div>
+      
       {/* Headline */}
       <h2
         className="text-center max-w-[900px] mb-10"
         style={{
           color: "white",
-          fontSize: "clamp(28px, 5vw, 44px)",
+          fontSize: "clamp(22px, 5vw, 40px)",
           fontWeight: "700",
           lineHeight: "1.2",
         }}

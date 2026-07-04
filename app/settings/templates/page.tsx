@@ -42,16 +42,16 @@ export default function TemplatesPage() {
             key={template.id}
             className="bg-white rounded-2xl border border-black/[0.07] overflow-hidden hover:border-black/15 hover:shadow-md transition-all"
           >
-            <div className="h-40 overflow-hidden">
+            <div className="h-50 overflow-hidden">
               <img
                 src={template.image}
                 alt={template.name}
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-[#1A0E07] mb-2">{template.name}</h3>
-              <p className="text-[14px] text-black/60 mb-4">{template.description}</p>
+            <div className="p-5">
+              <h3 className="text-lg md:text-md  font-bold text-[#1A0E07] mb-2">{template.name}</h3>
+              <p className="text-[14px] md:text-xs  text-black/60 mb-4">{template.description}</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setSelectedTemplate(template)}

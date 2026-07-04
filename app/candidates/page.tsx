@@ -30,8 +30,11 @@ export default function CandidatesPage() {
   const [error, setError] = useState<string | null>(null);
   const [showNewCandidateModal, setShowNewCandidateModal] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [newCandidate, setNewCandidate] = useState({ fullName: "", email: "", notes: "" });
+  const [editCandidate, setEditCandidate] = useState({ fullName: "", email: "", notes: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function loadCandidates() {
@@ -69,6 +72,55 @@ export default function CandidatesPage() {
       setSubmitting(false);
     }
   }
+
+  async function handleEditCandidate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedCandidate) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/candidates/${selectedCandidate.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editCandidate),
+      });
+      if (!res.ok) throw new Error("Failed to update candidate");
+      const { candidate } = await res.json();
+      setCandidates(prev => prev?.map(c => c.id === candidate.id ? candidate : c) ?? [candidate]);
+      setSelectedCandidate(candidate);
+      setIsEditing(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleDeleteCandidate() {
+    if (!selectedCandidate) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/candidates/${selectedCandidate.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete candidate");
+      setCandidates(prev => prev?.filter(c => c.id !== selectedCandidate.id) ?? []);
+      setSelectedCandidate(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  const startEdit = () => {
+    if (!selectedCandidate) return;
+    setEditCandidate({
+      fullName: selectedCandidate.full_name,
+      email: selectedCandidate.email || "",
+      notes: selectedCandidate.notes || "",
+    });
+    setIsEditing(true);
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -225,7 +277,7 @@ export default function CandidatesPage() {
         </div>
       )}
 
-      {/* Candidate Details Modal */}
+      {/* Candidate Details / Edit Modal */}
       {selectedCandidate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden">
@@ -243,7 +295,7 @@ export default function CandidatesPage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => setSelectedCandidate(null)}
+                  onClick={() => { setSelectedCandidate(null); setIsEditing(false); }}
                   className="text-black/40 hover:text-black/60"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -253,35 +305,98 @@ export default function CandidatesPage() {
               </div>
             </div>
             <div className="p-8 space-y-6">
-              {selectedCandidate.email && (
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-black/[0.05] flex items-center justify-center shrink-0">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-black/60">
-                      <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
+              {isEditing ? (
+                <form onSubmit={handleEditCandidate} className="space-y-4">
+                  <div>
+                    <label htmlFor="editFullName" className="block text-[13px] font-medium text-black/80 mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      id="editFullName"
+                      type="text"
+                      required
+                      value={editCandidate.fullName}
+                      onChange={(e) => setEditCandidate({ ...editCandidate, fullName: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
+                    />
                   </div>
                   <div>
-                    <div className="text-[12px] text-black/40">Email</div>
-                    <div className="text-[14px] font-medium text-[#1A0E07]">{selectedCandidate.email}</div>
+                    <label htmlFor="editEmail" className="block text-[13px] font-medium text-black/80 mb-2">
+                      Email
+                    </label>
+                    <input
+                      id="editEmail"
+                      type="email"
+                      value={editCandidate.email}
+                      onChange={(e) => setEditCandidate({ ...editCandidate, email: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
+                    />
                   </div>
-                </div>
+                  <div>
+                    <label htmlFor="editNotes" className="block text-[13px] font-medium text-black/80 mb-2">
+                      Notes
+                    </label>
+                    <textarea
+                      id="editNotes"
+                      rows={3}
+                      value={editCandidate.notes}
+                      onChange={(e) => setEditCandidate({ ...editCandidate, notes: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(false)}
+                      className="flex-1 px-4 py-2.5 rounded-full border border-black/10 text-[14px] font-semibold text-black/60 hover:bg-black/5 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="flex-1 px-4 py-2.5 rounded-full bg-[#1A0E07] text-white text-[14px] font-semibold hover:bg-[#2b1a0e] transition-colors disabled:opacity-50"
+                    >
+                      {submitting ? "Saving..." : "Save Changes"}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  {selectedCandidate.email && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-black/[0.05] flex items-center justify-center shrink-0">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-black/60">
+                          <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-[12px] text-black/40">Email</div>
+                        <div className="text-[14px] font-medium text-[#1A0E07]">{selectedCandidate.email}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selectedCandidate.notes && (
+                    <div className="p-4 rounded-xl bg-black/[0.02]">
+                      <div className="text-[12px] text-black/40 mb-2">Notes</div>
+                      <div className="text-[14px] text-black/70">{selectedCandidate.notes}</div>
+                    </div>
+                  )}
+                  
+                  <div className="pt-4 flex gap-3">
+                    <button className="flex-1 px-6 py-2.5 rounded-full bg-[#1A0E07] text-white text-[14px] font-semibold hover:bg-[#2b1a0e] transition-colors">
+                      Start Review
+                    </button>
+                    <button onClick={startEdit} className="px-6 py-2.5 rounded-full border border-black/10 text-[14px] font-semibold text-black/60 hover:bg-black/[0.02] transition-colors">
+                      Edit
+                    </button>
+                    <button onClick={handleDeleteCandidate} disabled={deleting} className="px-6 py-2.5 rounded-full border border-red-200 text-[14px] font-semibold text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50">
+                      {deleting ? "Deleting..." : "Delete"}
+                    </button>
+                  </div>
+                </>
               )}
-              
-              {selectedCandidate.notes && (
-                <div className="p-4 rounded-xl bg-black/[0.02]">
-                  <div className="text-[12px] text-black/40 mb-2">Notes</div>
-                  <div className="text-[14px] text-black/70">{selectedCandidate.notes}</div>
-                </div>
-              )}
-              
-              <div className="pt-4 flex gap-3">
-                <button className="flex-1 px-6 py-2.5 rounded-full bg-[#1A0E07] text-white text-[14px] font-semibold hover:bg-[#2b1a0e] transition-colors">
-                  Start Review
-                </button>
-                <button className="px-6 py-2.5 rounded-full border border-black/10 text-[14px] font-semibold text-black/60 hover:bg-black/[0.02] transition-colors">
-                  Edit
-                </button>
-              </div>
             </div>
           </div>
         </div>
