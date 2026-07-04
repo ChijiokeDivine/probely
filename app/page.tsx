@@ -45,6 +45,19 @@ function useInView(options = {}) {
 export default function Home() {
   const [qrHovered, setQrHovered] = useState(false);
   const [setHeroRef, isHeroInView] = useInView();
+  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null);
+
+  const scrollLeft = () => {
+    if (scrollContainerRef) {
+      scrollContainerRef.scrollBy({ left: -400, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef) {
+      scrollContainerRef.scrollBy({ left: 400, behavior: "smooth" });
+    }
+  };
   return (
     <>
     <section
@@ -336,16 +349,17 @@ export default function Home() {
         <Image
           src="/qr-code.png"
           alt="QR code"
-          width={74}
-          height={74}
+          width={100}
+          height={100}
           loading="eager"
-          className="w-[58px] h-[58px] md:w-[74px] md:h-[74px] aspect-square"
+          className=" "
         />
       </div>
     </section>
     <LogoTicker />
+
     <UnifyFinancesSection />
-    
+
     {/* Features Cards Section */}
     <section
       className={`${jakartaSans.className} min-h-[600px] flex flex-col items-center justify-center px-5 py-[60px]`}
@@ -353,10 +367,10 @@ export default function Home() {
         background: "#ffffff",
       }}
     >
-      <div className="w-full max-w-6xl">
+      <div className="w-full max-w-6xl md:pb-[100px]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Card 1 */}
-          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden relative">
+          <div className="bg-[#fafafa] md:rounded-[20px] rounded-[15px] overflow-hidden relative">
             <div className="h-56 overflow-hidden relative">
               <Image
                 src="/reviews.webp"
@@ -387,7 +401,7 @@ export default function Home() {
           </div>
 
           {/* Card 2 */}
-          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden relative">
+          <div className="bg-[#fafafa] md:rounded-[20px] rounded-[15px] overflow-hidden relative">
             <div className="h-56 overflow-hidden relative">
               <Image
                 src="/feedback.webp"
@@ -418,7 +432,7 @@ export default function Home() {
           </div>
 
           {/* Card 3 */}
-          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden relative">
+          <div className="bg-[#fafafa] md:rounded-[20px] rounded-[15px] overflow-hidden relative ">
             <div className="h-56 overflow-hidden relative">
               <Image
                 src="/templatepage.webp"
@@ -447,10 +461,124 @@ export default function Home() {
               </button>
             </div>
           </div>
+          
+          
+          
         </div>
       </div>
     </section>
     
+    {/* Horizontal Scroll Section */}
+    <section className={`${jakartaSans.className} min-h-[500px] flex flex-col items-center justify-center px-5 py-[60px] border-t-[2px] border-t-[#F2F2F2]`} style={{ background: "#ffffffff" }}>
+      <div className="w-full max-w-6xl md:pb-[100px]">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-black/[0.07]">
+            
+            <span className="text-[16px] font-semibold text-[#171717]">Why Honio</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={scrollLeft}
+              className="w-10 h-10 rounded-full bg-white border border-black/[0.07] flex items-center justify-center hover:bg-black/[0.02] transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#171717" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </button>
+            <button
+              onClick={scrollRight}
+              className="w-10 h-10 rounded-full bg-[#F2F2F2] border border-black/[0.07] flex items-center justify-center hover:bg-[#F5F5F5]  transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div
+          ref={setScrollContainerRef}
+          className="flex gap-6 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {/* Card 1 */}
+          <div className="min-w-[360px] md:min-w-[420px] bg-[#6D794A] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[22px] font-semibold text-white">On regular review rounds, reviewers anchor on each other.</h3>
+            <p className="text-[14px] text-white/80">Once a reviewer sees the first score, every score that comes after is influenced by this score.</p>
+            <div className="h-80 relative rounded-[12px] overflow-hidden">
+              <Image
+                src="/design.webp"
+                alt="Crypto Trading"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="min-w-[360px] md:min-w-[420px] bg-[#1a1a1a] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[22px] font-semibold text-white">Scores are stored as plain text, anyone with access can see.</h3>
+            <p className="text-[14px] text-white/80">Editable and visible to anyone with database access, instantly.</p>
+            <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center bg-[#2a2a2a]">
+              <div className="w-24 h-24 rounded-3xl bg-[#b3a1ff] flex items-center justify-center">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                  <path d="M2 17l10 5 10-5"/>
+                  <path d="M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="min-w-[360px] md:min-w-[420px] bg-[#e8e5f0] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[22px] font-semibold text-[#171717]">With Honio, scores get encrypted the moment they're submitted.</h3>
+            <p className="text-[14px] text-[#171717]/70">Zama's FHE keeps it unreadable - even to us.</p>
+            <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center">
+              <div className="text-[72px] font-bold text-[#171717]">$134</div>
+            </div>
+          </div>
+
+          {/* Card 4 */}
+          <div className="min-w-[360px] md:min-w-[420px] bg-[#6F120F] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[22px] font-semibold text-white">No one sees a review early, leading to bias.</h3>
+            <p className="text-[14px] text-white/80">Not other reviewers. Not admins. Not our own servers.</p>
+            <div className="h-80 relative rounded-[12px] overflow-hidden">
+              <Image
+                src="/design.webp"
+                alt="Crypto Trading"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Card 5 */}
+          <div className="min-w-[360px] md:min-w-[420px] bg-[#e8e5f0] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[22px] font-semibold text-[#171717]">All results surface together, onchain</h3>
+            <p className="text-[14px] text-[#171717]/70">Only when every interviewer has submitted.</p>
+            <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center">
+              <div className="text-[72px] font-bold text-[#171717]">$134</div>
+            </div>
+          </div>
+
+
+          {/* Card 6 */}
+          <div className="min-w-[360px] md:min-w-[420px] bg-[#3D617A] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[22px] font-semibold text-white">The good part is that it's recorded on the blockchain.</h3>
+            <p className="text-[14px] text-white/80">A public ledger makes tampering visible, not just unlikely. Nothing gets quietly edited.</p>
+            <div className="h-80 relative rounded-[12px] overflow-hidden">
+              <Image
+                src="/design.webp"
+                alt="Crypto Trading"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </section>
     {/* Corgi Insurance Section */}
     <section
       className={`${jakartaSans.className} min-h-screen flex flex-col items-center justify-center px-5 py-[60px]`}
@@ -515,6 +643,7 @@ export default function Home() {
         </button>
       </div>
     </section>
+
 
     {/* Footer Section */}
     <section className={`${jakartaSans.className} bg-[#171717]`}>
