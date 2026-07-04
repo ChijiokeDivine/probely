@@ -36,7 +36,7 @@ export default function TemplatesPage() {
         <p className="text-[14px] text-black/60">Browse and use pre-built templates for your candidate reviews</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-3">
         {TEMPLATES.map((template) => (
           <div
             key={template.id}

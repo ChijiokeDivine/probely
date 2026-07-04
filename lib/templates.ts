@@ -42,7 +42,7 @@ export const TEMPLATES: ReviewTemplate[] = [
       failAction: "Send rejection",
     },
     notesForReviewers: "Please focus on the candidate's ability to design scalable systems and mentor junior engineers.",
-    image: "/guysonpc.webp",
+    image: "/programmer.webp",
   },
   {
     id: "frontend-dev",
@@ -64,7 +64,7 @@ export const TEMPLATES: ReviewTemplate[] = [
       failAction: "No action",
     },
     notesForReviewers: "Pay attention to the candidate's knowledge of modern frontend frameworks and accessibility best practices.",
-    image: "/womanonpc.webp",
+    image: "/programmer.webp",
   },
   {
     id: "product-manager",
@@ -108,6 +108,6 @@ export const TEMPLATES: ReviewTemplate[] = [
       failAction: "No action",
     },
     notesForReviewers: "Assess the candidate's design thinking process and ability to create user-centered solutions.",
-    image: "/pressingpc.webp",
+    image: "/design.webp",
   },
 ];

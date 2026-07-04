@@ -345,13 +345,13 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Card 1 */}
           <div className="bg-[#fafafa] rounded-[32px] overflow-hidden">
-            <div className="h-64 overflow-hidden relative bg-gradient-to-br from-[#1A0E07] to-[#3a2618]">
-              {/* Placeholder image */}
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-3/4 h-3/4 bg-white/10 rounded-2xl backdrop-blur-sm flex items-center justify-center">
-                  <span className="text-white/60 text-sm font-medium">Screenshot Preview</span>
-                </div>
-              </div>
+            <div className="h-64 overflow-hidden relative">
+              <Image
+                src="/reviews.webp"
+                alt="Create Reviews"
+                fill
+                className="object-cover"
+              />
             </div>
             <div className="p-8">
               <h3 className="text-[22px] font-bold text-[#1A0E07] mb-3">Create Reviews</h3>
@@ -375,12 +375,13 @@ export default function Home() {
 
           {/* Card 2 */}
           <div className="bg-[#fafafa] rounded-[32px] overflow-hidden">
-            <div className="h-64 overflow-hidden relative bg-gradient-to-br from-[#2a4a7a] to-[#1a2a4a]">
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-3/4 h-3/4 bg-white/10 rounded-2xl backdrop-blur-sm flex items-center justify-center">
-                  <span className="text-white/60 text-sm font-medium">Screenshot Preview</span>
-                </div>
-              </div>
+            <div className="h-64 overflow-hidden relative">
+              <Image
+                src="/feedback.webp"
+                alt="Collect Feedback"
+                fill
+                className="object-cover"
+              />
             </div>
             <div className="p-8">
               <h3 className="text-[22px] font-bold text-[#1A0E07] mb-3">Collect Feedback</h3>
@@ -404,12 +405,13 @@ export default function Home() {
 
           {/* Card 3 */}
           <div className="bg-[#fafafa] rounded-[32px] overflow-hidden">
-            <div className="h-64 overflow-hidden relative bg-gradient-to-br from-[#4a2a6a] to-[#2a1a4a]">
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="w-3/4 h-3/4 bg-white/10 rounded-2xl backdrop-blur-sm flex items-center justify-center">
-                  <span className="text-white/60 text-sm font-medium">Screenshot Preview</span>
-                </div>
-              </div>
+            <div className="h-64 overflow-hidden relative">
+              <Image
+                src="/design.webp"
+                alt="Analytics Dashboard"
+                fill
+                className="object-cover"
+              />
             </div>
             <div className="p-8">
               <h3 className="text-[22px] font-bold text-[#1A0E07] mb-3">Analytics Dashboard</h3>
@@ -485,6 +487,83 @@ export default function Home() {
         >
           Get started
         </button>
+      </div>
+    </section>
+
+    {/* Footer Section */}
+    <section className={`${jakartaSans.className} bg-[#171717]`}>
+      <div className="max-w-6xl mx-auto px-5 py-12 md:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+          {/* Logo & Tagline */}
+          <div className="lg:col-span-1">
+            <a href="#" className="flex items-center gap-2 mb-6">
+              {/* Probely logomark */}
+              <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="9.5" cy="13.5" r="7.5" fill="white" />
+                <circle cx="9.5" cy="13.5" r="3.4" fill="#171717" />
+                <circle cx="20" cy="13.5" r="4.8" fill="rgba(255,255,255,0.52)" />
+              </svg>
+              <span style={{ color: "white", fontSize: "17.5px", fontWeight: 700, letterSpacing: "-0.3px" }}>Probely</span>
+            </a>
+            <p className="text-white/60 text-sm leading-relaxed">Better hiring starts here. Collect unbiased interview feedback and make confident decisions.</p>
+          </div>
+
+          {/* Product */}
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-5">Product</h4>
+            <ul className="space-y-3">
+              <li><a href="#" className="text-white/60 text-sm hover:text-white transition-colors">Features</a></li>
+              <li><a href="#" className="text-white/60 text-sm hover:text-white transition-colors">How it works</a></li>
+              <li><a href="#" className="text-white/60 text-sm hover:text-white transition-colors">Pricing</a></li>
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-5">Company</h4>
+            <ul className="space-y-3">
+              <li><a href="#" className="text-white/60 text-sm hover:text-white transition-colors">About</a></li>
+              <li><a href="#" className="text-white/60 text-sm hover:text-white transition-colors">Blog</a></li>
+              <li><a href="#" className="text-white/60 text-sm hover:text-white transition-colors">Careers</a></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-5">Legal</h4>
+            <ul className="space-y-3">
+              <li><a href="#" className="text-white/60 text-sm hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="text-white/60 text-sm hover:text-white transition-colors">Terms of Service</a></li>
+              <li><a href="#" className="text-white/60 text-sm hover:text-white transition-colors">Security</a></li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-white/40 text-xs">© 2025 Probely. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <a href="#" className="text-white/40 hover:text-white transition-colors">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+              </svg>
+            </a>
+            <a href="#" className="text-white/40 hover:text-white transition-colors">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </a>
+            <a href="#" className="text-white/40 hover:text-white transition-colors">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                <rect x="2" y="9" width="4" height="12" />
+                <circle cx="4" cy="4" r="2" />
+              </svg>
+            </a>
+          </div>
+        </div>
       </div>
     </section>
     </>

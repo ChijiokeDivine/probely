@@ -207,7 +207,7 @@ function NewReviewContent() {
                 <select
                   value={formData.candidateId}
                   onChange={(e) => setFormData({ ...formData, candidateId: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20 text-[14px]"
+                  className="w-full px-4 text-black py-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20 text-[14px]"
                 >
                   <option value="">Select candidate</option>
                   {candidates.map((c) => (
@@ -223,7 +223,7 @@ function NewReviewContent() {
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                   placeholder="e.g., Senior Frontend Engineer"
-                  className="w-full px-4 py-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20 text-[14px]"
+                  className="w-full px-4 text-black py-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20 text-[14px]"
                 />
               </div>
 
@@ -233,7 +233,7 @@ function NewReviewContent() {
                   type="datetime-local"
                   value={formData.deadlineAt}
                   onChange={(e) => setFormData({ ...formData, deadlineAt: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20 text-[14px]"
+                  className="w-full px-4 text-black py-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20 text-[14px]"
                 />
               </div>
             </div>
@@ -315,7 +315,7 @@ function NewReviewContent() {
                           max="100"
                           value={bpsToPct(formData.categoryWeights[category.key as keyof typeof formData.categoryWeights])}
                           onChange={(e) => updateCategoryWeight(category.key, parseFloat(e.target.value) || 0)}
-                          className="w-20 px-3 py-1.5 rounded-lg border border-black/10 text-right text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
+                          className="w-20 text-black px-3 py-1.5 rounded-lg border border-black/10 text-right text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
                         />
                         <span className="text-[14px] font-semibold text-[#1A0E07]">%</span>
                       </div>
@@ -339,7 +339,7 @@ function NewReviewContent() {
                   onChange={(e) => setFormData({ ...formData, notesForReviewers: e.target.value })}
                   placeholder="Share any context about this candidate that reviewers should know..."
                   rows={4}
-                  className="w-full px-4 py-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20 text-[14px]"
+                  className="w-full text-black px-4 py-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20 text-[14px]"
                 />
               </div>
 
@@ -385,7 +385,7 @@ function NewReviewContent() {
                             ...formData,
                             autoAdvanceRule: { ...formData.autoAdvanceRule, passThreshold: parseInt(e.target.value) || 0 }
                           })}
-                          className="flex-1 px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
+                          className="flex-1 text-black px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
                         />
                         <span className="text-[14px] text-black/70">% →</span>
                         <select
@@ -394,7 +394,7 @@ function NewReviewContent() {
                             ...formData,
                             autoAdvanceRule: { ...formData.autoAdvanceRule, passAction: e.target.value }
                           })}
-                          className="px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
+                          className="text-black px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
                         >
                           <option value="Next round">Next round</option>
                           <option value="Send offer">Send offer</option>
@@ -415,7 +415,7 @@ function NewReviewContent() {
                             ...formData,
                             autoAdvanceRule: { ...formData.autoAdvanceRule, failThreshold: parseInt(e.target.value) || 0 }
                           })}
-                          className="flex-1 px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
+                          className="flex-1 text-black px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
                         />
                         <span className="text-[14px] text-black/70">% →</span>
                         <select
@@ -424,7 +424,7 @@ function NewReviewContent() {
                             ...formData,
                             autoAdvanceRule: { ...formData.autoAdvanceRule, failAction: e.target.value }
                           })}
-                          className="px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
+                          className="text-black px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
                         >
                           <option value="Send rejection">Send rejection</option>
                           <option value="No action">No action</option>
