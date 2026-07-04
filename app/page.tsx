@@ -315,7 +315,7 @@ export default function Home() {
               alt="Collect Feedback"
               fill
               sizes="100vw"
-              className="object-cover"
+              className="object-cover md:rounded-[32px] rounded-[15px]"
             />
           </div>
         </div>
