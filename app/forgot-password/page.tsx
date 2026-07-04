@@ -119,7 +119,7 @@ export default function ForgotPasswordPage() {
               letterSpacing: "-0.3px",
             }}
           >
-            Probely
+            Honio
           </span>
         </Link>
 

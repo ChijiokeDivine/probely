@@ -231,7 +231,7 @@ export default function UnifyFinancesSection() {
                       <circle cx="20" cy="13.5" r="4.8" fill="#1A0E07" opacity="0.35" />
                     </svg>
                     <span className="text-xs font-semibold tracking-tight text-gray-900">
-                      Probely
+                      Honio
                     </span>
                   </div>
                   <span className="rounded-full bg-green-50 border border-green-200 px-2 py-0.5 text-[10px] font-medium text-green-700">

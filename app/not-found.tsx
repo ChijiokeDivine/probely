@@ -96,7 +96,7 @@ export default function NotFound() {
               letterSpacing: "-0.3px",
             }}
           >
-            Probely
+            Honio
           </span>
         </Link>
 

@@ -472,7 +472,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <ResourceCard
             title="How FHE keeps scores private"
-            desc="Even Probely can't see individual reviewer scores until reveal."
+            desc="Even Honio can't see individual reviewer scores until reveal."
             gradient="linear-gradient(135deg,#FFD9EC 0%,#FF9BC7 100%)"
           />
           <ResourceCard

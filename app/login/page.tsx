@@ -143,7 +143,7 @@ export default function LoginPage() {
               letterSpacing: "-0.3px",
             }}
           >
-            Probely
+            Honio
           </span>
         </Link>
 

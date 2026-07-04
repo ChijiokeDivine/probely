@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Probely ⁃ The road to better hiring",
+  title: "Honio ⁃ The road to better hiring",
   description: "Independent candidate reviews that stay private until every interviewer has submitted.",
 };
 

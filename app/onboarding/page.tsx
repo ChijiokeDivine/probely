@@ -112,7 +112,7 @@ export default function OnboardingPage() {
             <circle cx="9.5" cy="13.5" r="3.4" fill="white" />
             <circle cx="20" cy="13.5" r="4.8" fill="#000" />
           </svg>
-          <span style={{ color: "#000", fontSize: "17.5px", fontWeight: 700, letterSpacing: "-0.3px" }}>Probely</span>
+          <span style={{ color: "#000", fontSize: "17.5px", fontWeight: 700, letterSpacing: "-0.3px" }}>Honio</span>
         </div>
 
         <div className="text-[13px] font-medium text-black/40">Step {step} of 2</div>
@@ -126,7 +126,7 @@ export default function OnboardingPage() {
             {step === 1 ? (
               <>
                 <div className="anim-form-header">
-                  <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 mb-2">How will you use Probely?</h1>
+                  <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 mb-2">How will you use Honio?</h1>
                   <p className="text-sm text-neutral-500 mb-7">You can always invite people into the other role later.</p>
                 </div>
 
@@ -244,7 +244,7 @@ export default function OnboardingPage() {
                   <circle cx="9.5" cy="13.5" r="3.4" fill="#1A0E07" />
                   <circle cx="20" cy="13.5" r="4.8" fill="rgba(255,255,255,0.52)" />
                 </svg>
-                <span style={{ color: "white", fontSize: "17.5px", fontWeight: 700, letterSpacing: "-0.3px" }}>Probely</span>
+                <span style={{ color: "white", fontSize: "17.5px", fontWeight: 700, letterSpacing: "-0.3px" }}>Honio</span>
               </Link>
             </div>
             <div className="anim-welcome">

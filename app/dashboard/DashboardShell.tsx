@@ -119,7 +119,7 @@ export default function DashboardShell({
                 <circle cx="20" cy="13.5" r="4.8" fill="#1A0E07" />
               </svg>
             </div>
-            <span className="text-[14.5px] font-bold text-[#1A0E07]">Probely</span>
+            <span className="text-[14.5px] font-bold text-[#1A0E07]">Honio</span>
           </div>
         </div>
 

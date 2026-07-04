@@ -178,7 +178,7 @@ export default function Sidebar({
                 </svg>
               </div>
               <div className="min-w-0">
-                <div className="text-[13.5px] font-semibold text-[#1A0E07] truncate">Probely</div>
+                <div className="text-[13.5px] font-semibold text-[#1A0E07] truncate">Honio</div>
               </div>
               <div className="ml-auto flex items-center gap-1">
                 {onToggleCollapse && (

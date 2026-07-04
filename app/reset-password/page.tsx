@@ -124,7 +124,7 @@ export default function ResetPasswordPage() {
               letterSpacing: "-0.3px",
             }}
           >
-            Probely
+            Honio
           </span>
         </Link>
 

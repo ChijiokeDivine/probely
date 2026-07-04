@@ -1,4 +1,4 @@
-# Probely backend — integration guide
+# Honio backend — integration guide
 
 Everything in this drop is DB + business logic + on-chain wiring, with **no
 UI**. It's built so each future screen is a thin fetch() call against one of

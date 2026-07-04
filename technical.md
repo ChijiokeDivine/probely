@@ -194,7 +194,7 @@ Wallet status note:
 ### Sidebar (shared across all admin pages)
 
 ```
-Logo: Probely wordmark + icon
+Logo: Honio wordmark + icon
 
 Navigation links (with active state):
 ├── Dashboard          /dashboard
@@ -622,7 +622,7 @@ GET /api/invite/[token]:
 
 **Page layout:**
 ```
-Company header: "Probely" logo
+Company header: "Honio" logo
 
 Context card:
 ├── "You've been invited to review"
@@ -702,7 +702,7 @@ GET /api/scorecard/[token]
 **Page layout (distraction-free, no sidebar):**
 ```
 Top bar (minimal):
-├── Probely logo (small, left)
+├── Honio logo (small, left)
 ├── "Confidential review — submit before [deadline]" (center)
 └── Countdown timer (right, red if < 24h)
 
@@ -936,7 +936,7 @@ Three-step horizontal layout:
 Section: Why FHE matters (the privacy guarantee)
 Two-column:
 ├── Left: "Normal tools: anonymity is a promise" — admin sees all scores
-└── Right: "Probely: privacy is a proof" — even we can't see individual scores
+└── Right: "Honio: privacy is a proof" — even we can't see individual scores
     "Powered by Zama FHEVM" badge
 
 Section: Built on blockchain

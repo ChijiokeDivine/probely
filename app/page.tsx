@@ -140,7 +140,7 @@ export default function Home() {
               letterSpacing: "-0.3px",
             }}
           >
-            Probely
+            Honio
           </span>
         </a>
 
@@ -462,7 +462,7 @@ export default function Home() {
       <div className="w-full max-w-4xl h-auto relative overflow-hidden rounded-xl mb-10">
         <Image
           src="/main.webp"
-          alt="Probely Dashboard"
+          alt="Honio Dashboard"
           width={1000}
           height={600}
           className="w-full h-auto object-contain"
@@ -479,7 +479,7 @@ export default function Home() {
           lineHeight: "1.2",
         }}
       >
-        One bad hire costs 30% of their annual salary. Probely is priced against that risk, not your headcount.
+        One bad hire costs 30% of their annual salary. Honio is priced against that risk, not your headcount.
       </h2>
 
       {/* Buttons Row */}
@@ -523,13 +523,13 @@ export default function Home() {
           {/* Logo & Tagline */}
           <div className="lg:col-span-1">
             <a href="#" className="flex items-center gap-2 mb-6">
-              {/* Probely logomark */}
+              {/* Honio logomark */}
               <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="9.5" cy="13.5" r="7.5" fill="white" />
                 <circle cx="9.5" cy="13.5" r="3.4" fill="#171717" />
                 <circle cx="20" cy="13.5" r="4.8" fill="rgba(255,255,255,0.52)" />
               </svg>
-              <span style={{ color: "white", fontSize: "17.5px", fontWeight: 700, letterSpacing: "-0.3px" }}>Probely</span>
+              <span style={{ color: "white", fontSize: "17.5px", fontWeight: 700, letterSpacing: "-0.3px" }}>Honio</span>
             </a>
             <p className="text-white/60 text-sm leading-relaxed">Better hiring starts here. Collect unbiased interview feedback and make confident decisions.</p>
           </div>
@@ -567,7 +567,7 @@ export default function Home() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-white/40 text-xs">© 2025 Probely. All rights reserved.</p>
+          <p className="text-white/40 text-xs">© 2025 Honio. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <a href="#" className="text-white/40 hover:text-white transition-colors">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">

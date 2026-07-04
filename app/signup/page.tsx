@@ -168,7 +168,7 @@ export default function SignupPage() {
               letterSpacing: "-0.3px",
             }}
           >
-            Probely
+            Honio
           </span>
         </Link>
 
