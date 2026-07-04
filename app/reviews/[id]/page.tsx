@@ -14,11 +14,12 @@ const MOCK_REVIEWERS = [
 ];
 
 const TABS = ["Overview", "Activity", "Settings"] as const;
+type TabType = typeof TABS[number];
 
 export default function ReviewDetailsPage() {
   const params = useParams();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<typeof TABS[0]>("Overview");
+  const [activeTab, setActiveTab] = useState<TabType>("Overview");
   const [loading, setLoading] = useState(true);
   const [revealLoading, setRevealLoading] = useState(false);
   const [revealStatus, setRevealStatus] = useState<"idle" | "requesting" | "decrypting" | "storing">("idle");
