@@ -1,16 +1,16 @@
 import React from "react";
 
 const CLIENTS = [
-  "Northwind",
-  "Ferrovia",
-  "Halstead & Co",
-  "Cobalt Systems",
-  "Meridian Labs",
-  "Aldergate",
-  "Brightwell",
-  "Perch",
-  "Ossian",
-  "Fieldstone",
+  "Private",
+  "Anonymous",
+  "Encrypted",
+  "Verified",
+  "Confidential",
+  "Secure",
+  "Trusted",
+  "Transparent",
+  "Protected",
+  "Honest Reviews",
 ];
 
 export default function LogoTicker() {
