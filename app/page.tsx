@@ -356,7 +356,7 @@ export default function Home() {
       <div className="w-full max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Card 1 */}
-          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden">
+          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden relative">
             <div className="h-64 overflow-hidden relative">
               <Image
                 src="/reviews.webp"
@@ -387,7 +387,7 @@ export default function Home() {
           </div>
 
           {/* Card 2 */}
-          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden">
+          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden relative">
             <div className="h-64 overflow-hidden relative">
               <Image
                 src="/feedback.webp"
@@ -418,7 +418,7 @@ export default function Home() {
           </div>
 
           {/* Card 3 */}
-          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden">
+          <div className="bg-[#fafafa] md:rounded-[32px] rounded-[15px] overflow-hidden relative">
             <div className="h-64 overflow-hidden relative">
               <Image
                 src="/templatepage.webp"
