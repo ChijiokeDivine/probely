@@ -5,9 +5,13 @@ import { useEffect, useState } from "react";
 interface Profile {
   id: string;
   full_name: string | null;
+  name: string | null;
   email: string | null;
   company: string | null;
+  role: string | null;
   wallet_status: string;
+  privy_wallet_id: string | null;
+  wallet_address: string | null;
 }
 
 function Skeleton() {
