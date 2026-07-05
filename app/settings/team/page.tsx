@@ -85,7 +85,7 @@ export default function TeamPage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M12 5v14M5 12h14"></path>
           </svg>
-          Invite Member
+          Invite <span className="hidden md:block">Member</span>
         </button>
       </div>
 
@@ -116,7 +116,7 @@ export default function TeamPage() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M12 5v14M5 12h14"></path>
             </svg>
-            Invite First Member
+            Invite <span className="hidden md:block">First</span> Member
           </button>
         </div>
       ) : (

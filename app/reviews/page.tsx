@@ -70,7 +70,7 @@ export default function ReviewsPage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M12 5v14M5 12h14"></path>
           </svg>
-          New Review
+          New <span className="hidden md:block">Review</span>
         </Link>
       </div>
 
@@ -96,7 +96,7 @@ export default function ReviewsPage() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M12 5v14M5 12h14"></path>
             </svg>
-            Create First Review
+            Create <span className="hidden md:block">First</span> Review
           </Link>
         </div>
       ) : (

@@ -9,6 +9,7 @@ import CountdownTimer from "../components/ui/CountdownTimer";
 import ProgressDots from "../components/ui/ProgressDots";
 import MetricCard from "../components/ui/MetricCard";
 import { useProfile } from "../dashboard/DashboardShell";
+import { TEMPLATES, ReviewTemplate } from "@/lib/templates";
 
 function Skeleton({ className }: { className?: string }) {
   return (
@@ -29,32 +30,7 @@ interface ReviewRow {
   created_at: string;
 }
 
-const PRESETS = [
-  {
-    key: "engineering",
-    label: "Engineering",
-    weights: "25 / 25 / 20 / 15 / 15",
-    image: "/programmer.webp",
-  },
-  {
-    key: "sales",
-    label: "Sales",
-    weights: "15 / 10 / 25 / 25 / 25",
-    image: "/sales.webp",
-  },
-  {
-    key: "design",
-    label: "Design",
-    weights: "15 / 20 / 25 / 20 / 20",
-    image: "/design.webp",
-  },
-  {
-    key: "management",
-    label: "Management",
-    weights: "20 / 15 / 25 / 20 / 20",
-    image: "/management.webp",
-  },
-];
+
 
 function isReadyToReveal(r: ReviewRow) {
   return r.status === "active" && r.submitted_count >= r.reviewer_count;
@@ -207,22 +183,22 @@ export default function DashboardPage() {
               <div className="text-[11px] font-medium text-black/70 mt-2 text-left">Start from scratch</div>
             </button>
 
-            {PRESETS.map((p) => (
+            {TEMPLATES.map((template) => (
               <button
-                key={p.key}
-                onClick={() => router.push(`/reviews/new?preset=${p.key}`)}
+                key={template.id}
+                onClick={() => router.push(`/reviews/new?template=${encodeURIComponent(JSON.stringify(template))}`)}
                 className="shrink-0 snap-start w-[150px] sm:w-[168px] text-left"
               >
                 <div
                   className="w-full aspect-[4/3] rounded-xl overflow-hidden"
                 >
                   <img
-                    src={p.image}
-                    alt={p.label}
+                    src={template.image}
+                    alt={template.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="text-[11px] font-medium text-black/70 mt-2">{p.label} preset</div>
+                <div className="text-[11px] font-medium text-black/70 mt-2">{template.name} preset</div>
               </button>
             ))}
           </div>
