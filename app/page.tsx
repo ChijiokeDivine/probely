@@ -535,11 +535,11 @@ export default function Home() {
             <p className="text-[12px] md:text-[14px] text-[#171717]/70">Zama's FHE keeps it unreadable - even to us.</p>
             <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center">
               <Image
-                src="/block.png"
+                src="/block.jpeg"
                 alt="Crypto Trading"
           
-                width={200}
-                height={200}
+                width={260}
+                height={260}
                 className="object-cover"
               />
             </div>
