@@ -33,6 +33,23 @@ interface FormData {
   notesForReviewers: string;
 }
 
+interface Candidate {
+  id: string;
+  candidate_ref: string;
+  full_name: string;
+  email: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+interface Reviewer {
+  id: string;
+  full_name: string;
+  email: string;
+  wallet_status: string;
+  wallet_address: string | null;
+}
+
 // Category configuration
 const CATEGORIES = [
   { key: "problemSolving", label: "Problem Solving", description: "How well the candidate breaks down problems" },
@@ -42,25 +59,14 @@ const CATEGORIES = [
   { key: "cultureGrowth", label: "Culture & Growth", description: "Cultural fit and potential" },
 ] as const;
 
-// Mock reviewers data
-const MOCK_REVIEWERS = [
-  { id: "1", name: "Jane Doe", email: "jane@example.com", walletStatus: "created" },
-  { id: "2", name: "John Smith", email: "john@example.com", walletStatus: "created" },
-  { id: "3", name: "Alice Johnson", email: "alice@example.com", walletStatus: "created" },
-];
-
-// Mock candidates data
-const MOCK_CANDIDATES = [
-  { id: "c1", full_name: "Sarah Chen", candidate_ref: "cand_abc123" },
-  { id: "c2", full_name: "Mike Johnson", candidate_ref: "cand_def456" },
-];
-
 function NewReviewContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState(1);
-  const [candidates, setCandidates] = useState(MOCK_CANDIDATES);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [reviewers, setReviewers] = useState<Reviewer[]>([]);
   const [loading, setLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(true);
   
   const [formData, setFormData] = useState<FormData>({
     candidateId: "",
@@ -107,6 +113,28 @@ function NewReviewContent() {
       }
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [candidatesRes, reviewersRes] = await Promise.all([
+          fetch("/api/candidates"),
+          fetch("/api/profile/team"),
+        ]);
+        if (!candidatesRes.ok) throw new Error("Failed to load candidates");
+        if (!reviewersRes.ok) throw new Error("Failed to load reviewers");
+        const candidatesData = await candidatesRes.json();
+        const reviewersData = await reviewersRes.json();
+        setCandidates(candidatesData.candidates);
+        setReviewers(reviewersData.team);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setDataLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   // Helper function to convert basis points to percentage
   const bpsToPct = (bps: number) => (bps / 100).toFixed(0);
@@ -244,7 +272,7 @@ function NewReviewContent() {
               <h2 className="text-xl font-bold text-[#1A0E07]">Reviewers</h2>
               
               <div className="space-y-3">
-                {MOCK_REVIEWERS.map((reviewer) => (
+                {reviewers.map((reviewer) => (
                   <label
                     key={reviewer.id}
                     className={`flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer ${
@@ -263,10 +291,10 @@ function NewReviewContent() {
                       )}
                     </div>
                     <div className="w-10 h-10 rounded-full bg-[#1A0E07] flex items-center justify-center shrink-0">
-                      <span className="text-white font-bold text-[14px]">{reviewer.name.charAt(0)}</span>
+                      <span className="text-white font-bold text-[14px]">{reviewer.full_name.charAt(0)}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[14px] font-semibold text-[#1A0E07]">{reviewer.name}</div>
+                      <div className="text-[14px] font-semibold text-[#1A0E07]">{reviewer.full_name}</div>
                       <div className="text-[12px] text-black/50">{reviewer.email}</div>
                     </div>
                     <input
