@@ -86,7 +86,7 @@ export const TEMPLATES: ReviewTemplate[] = [
       failAction: "Send rejection",
     },
     notesForReviewers: "Evaluate the candidate's ability to prioritize features and communicate effectively with stakeholders.",
-    image: "/product.webp",
+    image: "/management.webp",
   },
   {
     id: "designer",
