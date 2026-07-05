@@ -507,7 +507,7 @@ export default function Home() {
             <div className="h-80 relative rounded-[12px] overflow-hidden ">
               <Image
                 src="/image3.webp"
-                alt="Crypto Trading"
+                alt="men on pc"
                 fill
                 className="object-cover"
               />
@@ -523,7 +523,7 @@ export default function Home() {
                <lord-icon
                     src="https://cdn.lordicon.com/hnqamtrw.json"
                     trigger="hover"
-                    style={{ width: 170, height: 170 }}>
+                    style={{ width: 150, height: 150 }}>
                 </lord-icon>
              
             </div>
@@ -536,7 +536,7 @@ export default function Home() {
             <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center">
               <Image
                 src="/block.png"
-                alt="Crypto Trading"
+                alt="block"
           
                 width={260}
                 height={260}
@@ -549,13 +549,13 @@ export default function Home() {
           <div className="min-w-[320px] md:min-w-[420px] h-[400px] md:h-auto bg-[#6F120F] md:rounded-[24px] rounded-[15px] p-8 flex flex-col gap-6 overflow-hidden">
             <h3 className="text-[16px] md:text-[22px] font-semibold text-white">No one sees a review early, leading to bias.</h3>
             <p className="text-[12px] md:text-[14px] text-white/80">Not other reviewers. Not admins. Not our own servers.</p>
-            <div className="h-80 relative rounded-[12px] overflow-hidden">
-              <Image
-                src="/design.webp"
-                alt="Crypto Trading"
-                fill
-                className="object-cover"
-              />
+            <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center">
+              
+              <lord-icon
+                  src="https://cdn.lordicon.com/ntfnmkcn.json"
+                  trigger="hover"
+                  style={{ width: 150, height: 150 }}>
+              </lord-icon>
             </div>
           </div>
 
@@ -564,7 +564,13 @@ export default function Home() {
             <h3 className="text-[16px] md:text-[22px] font-semibold text-[#171717]">All results surface together, onchain</h3>
             <p className="text-[12px] md:text-[14px] text-[#171717]/70">Only when every interviewer has submitted.</p>
             <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center">
-              <div className="text-[72px] font-bold text-[#171717]">$134</div>
+                  <Image
+                src="/d.png" 
+                alt="globe"
+                 width={260}
+                height={200}
+                className="object-cover rounded-[15px]"
+              />
             </div>
           </div>
 
@@ -573,12 +579,13 @@ export default function Home() {
           <div className="min-w-[320px] md:min-w-[420px] h-[400px] md:h-auto bg-[#3D617A] md:rounded-[24px] rounded-[15px] p-8 flex flex-col gap-6 overflow-hidden">
             <h3 className="text-[16px] md:text-[22px] font-semibold text-white">The good part is that it's recorded on the blockchain.</h3>
             <p className="text-[12px] md:text-[14px] text-white/80">A public ledger makes tampering visible, not just unlikely. Nothing gets quietly edited.</p>
-            <div className="h-80 relative rounded-[12px] overflow-hidden">
+            <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center">
               <Image
-                src="/design.webp"
-                alt="Crypto Trading"
-                fill
-                className="object-cover"
+                src="/globe.png" 
+                alt="globe"
+                 width={260}
+                height={200}
+                className="object-cover rounded-[15px]"
               />
             </div>
           </div>
