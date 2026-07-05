@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Honio ⁃ The road to better hiring",
@@ -19,6 +20,10 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         {children}
+        <Script
+        src="https://cdn.lordicon.com/lordicon.js"
+        strategy="afterInteractive"
+        />
       </body>
     </html>
   );

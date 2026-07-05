@@ -474,7 +474,7 @@ export default function Home() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-black/[0.07]">
             
-            <span className="text-[16px] font-semibold text-[#171717]">Why Honio</span>
+            <span className="md:text-[16px] text-[12px] font-semibold text-[#171717]">Why Honio</span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -501,12 +501,12 @@ export default function Home() {
           className="flex gap-6 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           {/* Card 1 */}
-          <div className="min-w-[360px] md:min-w-[420px] bg-[#6D794A] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
-            <h3 className="text-[22px] font-semibold text-white">On regular review rounds, reviewers anchor on each other.</h3>
-            <p className="text-[14px] text-white/80">Once a reviewer sees the first score, every score that comes after is influenced by this score.</p>
-            <div className="h-80 relative rounded-[12px] overflow-hidden">
+          <div className="min-w-[320px] md:min-w-[420px] h-[400px] md:h-auto bg-[#6D794A] md:rounded-[24px] rounded-[15px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[16px] md:text-[22px] font-semibold text-white">On regular review rounds, reviewers anchor on each other.</h3>
+            <p className="text-[12px] md:text-[14px] text-white/80">Once a reviewer sees the first score, every score that comes after is influenced by this score.</p>
+            <div className="h-80 relative rounded-[12px] overflow-hidden ">
               <Image
-                src="/design.webp"
+                src="/image3.webp"
                 alt="Crypto Trading"
                 fill
                 className="object-cover"
@@ -515,33 +515,40 @@ export default function Home() {
           </div>
 
           {/* Card 2 */}
-          <div className="min-w-[360px] md:min-w-[420px] bg-[#1a1a1a] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
-            <h3 className="text-[22px] font-semibold text-white">Scores are stored as plain text, anyone with access can see.</h3>
-            <p className="text-[14px] text-white/80">Editable and visible to anyone with database access, instantly.</p>
-            <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center bg-[#2a2a2a]">
-              <div className="w-24 h-24 rounded-3xl bg-[#b3a1ff] flex items-center justify-center">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                  <path d="M2 17l10 5 10-5"/>
-                  <path d="M2 12l10 5 10-5"/>
-                </svg>
-              </div>
+          <div className="min-w-[320px] md:min-w-[420px] h-[400px] md:h-auto bg-[#1a1a1a] md:rounded-[24px] rounded-[15px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[16px] md:text-[22px] font-semibold text-white">Scores are stored as plain text, anyone with access can see.</h3>
+            <p className="text-[12px] md:text-[14px] text-white/80">Editable and visible to anyone with database access, instantly.</p>
+            <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center ">
+              
+               <lord-icon
+                    src="https://cdn.lordicon.com/hnqamtrw.json"
+                    trigger="hover"
+                    style={{ width: 170, height: 170 }}>
+                </lord-icon>
+             
             </div>
           </div>
 
           {/* Card 3 */}
-          <div className="min-w-[360px] md:min-w-[420px] bg-[#e8e5f0] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
-            <h3 className="text-[22px] font-semibold text-[#171717]">With Honio, scores get encrypted the moment they're submitted.</h3>
-            <p className="text-[14px] text-[#171717]/70">Zama's FHE keeps it unreadable - even to us.</p>
+          <div className="min-w-[320px] md:min-w-[420px] h-[400px] md:h-auto bg-[#e8e5f0] md:rounded-[24px] rounded-[15px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[16px] md:text-[22px] font-semibold text-[#171717]">With Honio, scores get encrypted the moment they're submitted.</h3>
+            <p className="text-[12px] md:text-[14px] text-[#171717]/70">Zama's FHE keeps it unreadable - even to us.</p>
             <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center">
-              <div className="text-[72px] font-bold text-[#171717]">$134</div>
+              <Image
+                src="/block.png"
+                alt="Crypto Trading"
+          
+                width={200}
+                height={200}
+                className="object-cover"
+              />
             </div>
           </div>
 
           {/* Card 4 */}
-          <div className="min-w-[360px] md:min-w-[420px] bg-[#6F120F] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
-            <h3 className="text-[22px] font-semibold text-white">No one sees a review early, leading to bias.</h3>
-            <p className="text-[14px] text-white/80">Not other reviewers. Not admins. Not our own servers.</p>
+          <div className="min-w-[320px] md:min-w-[420px] h-[400px] md:h-auto bg-[#6F120F] md:rounded-[24px] rounded-[15px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[16px] md:text-[22px] font-semibold text-white">No one sees a review early, leading to bias.</h3>
+            <p className="text-[12px] md:text-[14px] text-white/80">Not other reviewers. Not admins. Not our own servers.</p>
             <div className="h-80 relative rounded-[12px] overflow-hidden">
               <Image
                 src="/design.webp"
@@ -553,9 +560,9 @@ export default function Home() {
           </div>
 
           {/* Card 5 */}
-          <div className="min-w-[360px] md:min-w-[420px] bg-[#e8e5f0] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
-            <h3 className="text-[22px] font-semibold text-[#171717]">All results surface together, onchain</h3>
-            <p className="text-[14px] text-[#171717]/70">Only when every interviewer has submitted.</p>
+          <div className="min-w-[320px] md:min-w-[420px] h-[400px] md:h-auto bg-[#e8e5f0] md:rounded-[24px] rounded-[15px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[16px] md:text-[22px] font-semibold text-[#171717]">All results surface together, onchain</h3>
+            <p className="text-[12px] md:text-[14px] text-[#171717]/70">Only when every interviewer has submitted.</p>
             <div className="h-80 relative rounded-[12px] overflow-hidden flex items-center justify-center">
               <div className="text-[72px] font-bold text-[#171717]">$134</div>
             </div>
@@ -563,9 +570,9 @@ export default function Home() {
 
 
           {/* Card 6 */}
-          <div className="min-w-[360px] md:min-w-[420px] bg-[#3D617A] rounded-[24px] p-8 flex flex-col gap-6 overflow-hidden">
-            <h3 className="text-[22px] font-semibold text-white">The good part is that it's recorded on the blockchain.</h3>
-            <p className="text-[14px] text-white/80">A public ledger makes tampering visible, not just unlikely. Nothing gets quietly edited.</p>
+          <div className="min-w-[320px] md:min-w-[420px] h-[400px] md:h-auto bg-[#3D617A] md:rounded-[24px] rounded-[15px] p-8 flex flex-col gap-6 overflow-hidden">
+            <h3 className="text-[16px] md:text-[22px] font-semibold text-white">The good part is that it's recorded on the blockchain.</h3>
+            <p className="text-[12px] md:text-[14px] text-white/80">A public ledger makes tampering visible, not just unlikely. Nothing gets quietly edited.</p>
             <div className="h-80 relative rounded-[12px] overflow-hidden">
               <Image
                 src="/design.webp"
