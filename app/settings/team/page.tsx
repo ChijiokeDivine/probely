@@ -16,8 +16,16 @@ interface TeamMember {
   wallet_address: string | null;
 }
 
+interface TeamInvite {
+  id: string;
+  email: string;
+  status: "pending" | "accepted" | "declined" | "expired";
+  created_at: string;
+}
+
 export default function TeamPage() {
   const [team, setTeam] = useState<TeamMember[]>([]);
+  const [invites, setInvites] = useState<TeamInvite[]>([]);
   const [loading, setLoading] = useState(true);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -31,7 +39,8 @@ export default function TeamPage() {
         const res = await fetch("/api/profile/team");
         if (!res.ok) throw new Error("Failed to load team");
         const data = await res.json();
-        setTeam(data.team);
+        setTeam(data.team || []);
+        setInvites(data.invites || []);
       } catch (err) {
         console.error(err);
       } finally {
@@ -58,7 +67,9 @@ export default function TeamPage() {
         throw new Error(data.error || "Failed to send invite");
       }
       
+      const data = await res.json();
       setSuccess("Invitation sent successfully!");
+      setInvites(prev => [...prev, data.invite]);
       setInviteEmail("");
       setTimeout(() => {
         setShowInviteModal(false);
@@ -68,6 +79,22 @@ export default function TeamPage() {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  function getStatusBadgeClass(status: string) {
+    switch(status) {
+      case "created":
+      case "accepted":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "declined":
+        return "bg-red-100 text-red-800";
+      case "expired":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   }
 
@@ -98,45 +125,75 @@ export default function TeamPage() {
             </div>
           ))}
         </div>
-      ) : team.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-black/[0.07] p-12 text-center">
-          <div className="mb-4">
-            <lord-icon
-              src="https://cdn.lordicon.com/zrkkrrqk.json"
-              trigger="hover"
-              style={{ width: "100px", height: "100px" }}
-            />
-          </div>
-          <h2 className="text-lg font-bold text-[#1A0E07] mb-2">No team members yet</h2>
-          <p className="text-[14px] text-black/60 mb-6">Invite your first team member to start collaborating</p>
-          <button
-            onClick={() => setShowInviteModal(true)}
-            className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <path d="M12 5v14M5 12h14"></path>
-            </svg>
-            Invite <span className="hidden md:block">first</span> member
-          </button>
-        </div>
       ) : (
         <div className="space-y-4">
-          {team.map((member) => (
-            <div key={member.id} className="bg-white rounded-2xl border border-black/[0.07] p-5 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-[#1A0E07] flex items-center justify-center shrink-0">
-                <span className="text-xl font-bold text-white">{member.full_name.charAt(0).toUpperCase()}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[15px] font-semibold text-[#1A0E07]">{member.full_name}</div>
-                <div className="text-[13px] text-black/60">{member.email}</div>
-              </div>
-              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                member.wallet_status === "created" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
-              }`}>
-                {member.wallet_status === "created" ? "Wallet Ready" : "Wallet Pending"}
-              </div>
+          {/* Existing Team Members */}
+          {team.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold text-[#1A0E07] mb-3">Team Members</h2>
+              {team.map((member) => (
+                <div key={member.id} className="bg-white rounded-2xl border border-black/[0.07] p-5 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#1A0E07] flex items-center justify-center shrink-0">
+                    <span className="text-xl font-bold text-white">{member.full_name.charAt(0).toUpperCase()}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[15px] font-semibold text-[#1A0E07]">{member.full_name}</div>
+                    <div className="text-[13px] text-black/60">{member.email}</div>
+                  </div>
+                  <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(member.wallet_status)}`}>
+                    {member.wallet_status === "created" ? "Wallet Ready" : "Wallet Pending"}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+
+          {/* Invites Section */}
+          {invites.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-lg font-semibold text-[#1A0E07] mb-3">Invites Sent</h2>
+              {invites.map((invite) => (
+                <div key={invite.id} className="bg-white rounded-2xl border border-black/[0.07] p-5 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center shrink-0">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[15px] font-semibold text-[#1A0E07]">{invite.email}</div>
+                    <div className="text-[13px] text-black/60">Invited {new Date(invite.created_at).toLocaleDateString()}</div>
+                  </div>
+                  <div className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${getStatusBadgeClass(invite.status)}`}>
+                    {invite.status}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {team.length === 0 && invites.length === 0 && (
+            <div className="bg-white rounded-2xl border border-black/[0.07] p-12 text-center">
+              <div className="mb-4">
+                <lord-icon
+                  src="https://cdn.lordicon.com/zrkkrrqk.json"
+                  trigger="hover"
+                  style={{ width: "100px", height: "100px" }}
+                />
+              </div>
+              <h2 className="text-lg font-bold text-[#1A0E07] mb-2">No team members yet</h2>
+              <p className="text-[14px] text-black/60 mb-6">Invite your first team member to start collaborating</p>
+              <button
+                onClick={() => setShowInviteModal(true)}
+                className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                Invite <span className="hidden md:block">first</span> member
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -151,7 +208,7 @@ export default function TeamPage() {
                 className="text-black/40 hover:text-black/60"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6L6 18M6 6l12 12" />
+                  <path d="M18 6L6 18M6 6l12 12"></path>
                 </svg>
               </button>
             </div>
@@ -177,7 +234,7 @@ export default function TeamPage() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="colleague@example.com"
-                  className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
+                  className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20 text-black/80"
                 />
               </div>
               <div className="flex gap-3 pt-2">

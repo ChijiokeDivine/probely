@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { errorResponse } from "@/lib/auth/respond";
 import { getInviteByToken } from "@/lib/services/reviews";
+import { requireSession } from "@/lib/auth/authz";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function GET(
   _request: Request,
@@ -8,8 +10,97 @@ export async function GET(
 ) {
   try {
     const { token } = await params;
-    const invite = await getInviteByToken(token);
-    return NextResponse.json(invite);
+
+    // First check if it's a team invite
+    const admin = createAdminClient();
+    const { data: teamInvite, error: teamInviteError } = await admin
+      .from("team_invites")
+      .select("id, email, status, created_at, inviter_id")
+      .eq("invite_token", token)
+      .single();
+
+    if (teamInviteError) {
+      // If not a team invite, check if it's a review invite
+      const reviewInvite = await getInviteByToken(token);
+      return NextResponse.json({ type: "review", ...reviewInvite });
+    }
+
+    // Get inviter's name
+    const { data: inviterProfile } = await admin
+      .from("profiles")
+      .select("full_name")
+      .eq("id", teamInvite.inviter_id)
+      .single();
+
+    return NextResponse.json({ 
+      type: "team", 
+      ...teamInvite, 
+      inviterName: inviterProfile?.full_name 
+    });
+  } catch (err) {
+    return errorResponse(err);
+  }
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ token: string }> }
+) {
+  try {
+    const user = await requireSession();
+    const { token } = await params;
+    const admin = createAdminClient();
+    const body = await request.json();
+    const { action } = body;
+
+    // First check if it's a team invite
+    const { data: teamInvite, error: teamInviteError } = await admin
+      .from("team_invites")
+      .select("*")
+      .eq("invite_token", token)
+      .single();
+
+    if (teamInviteError) {
+      return NextResponse.json({ error: "Invalid invite token" }, { status: 404 });
+    }
+
+    // Check if invite is expired or already accepted/declined
+    if (teamInvite.status !== "pending") {
+      return NextResponse.json({ error: "Invite is no longer valid" }, { status: 409 });
+    }
+
+    if (new Date(teamInvite.expires_at) < new Date()) {
+      await admin
+        .from("team_invites")
+        .update({ status: "expired" })
+        .eq("id", teamInvite.id);
+      return NextResponse.json({ error: "Invite has expired" }, { status: 409 });
+    }
+
+    // Check if email matches the user's email
+    if (teamInvite.email !== user.email) {
+      return NextResponse.json({ error: "This invite is not for you" }, { status: 403 });
+    }
+
+    if (action === "accept") {
+      // Update invite status to accepted
+      await admin
+        .from("team_invites")
+        .update({ status: "accepted" })
+        .eq("id", teamInvite.id);
+
+      // Update the new user's role to reviewer (if needed)
+      // Also, here's where you could add them to a team table if you have one
+      return NextResponse.json({ success: true, status: "accepted" });
+    } else if (action === "decline") {
+      await admin
+        .from("team_invites")
+        .update({ status: "declined" })
+        .eq("id", teamInvite.id);
+      return NextResponse.json({ success: true, status: "declined" });
+    } else {
+      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+    }
   } catch (err) {
     return errorResponse(err);
   }
