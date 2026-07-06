@@ -255,7 +255,7 @@ export default function ScorecardPage() {
                       <input
                         type="range"
                         min="0"
-                        max="100"
+                        max={`${(weight / 100).toFixed(0)}`}
                         value={scores[category.key]}
                         onChange={(e) => setScores({ ...scores, [category.key]: Number(e.target.value) })}
                         className="w-full h-2 bg-black/10 rounded-lg appearance-none cursor-pointer accent-[#1A0E07]"
