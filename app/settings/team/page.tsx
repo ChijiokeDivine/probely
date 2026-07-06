@@ -141,7 +141,7 @@ export default function TeamPage() {
                     <div className="text-[13px] text-black/60">{member.email}</div>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(member.wallet_status)}`}>
-                    {member.wallet_status === "created" ? "Wallet Ready" : "Wallet Pending"}
+                    {member.wallet_status === "created" ? "Ready" : "Pending"}
                   </div>
                 </div>
               ))}

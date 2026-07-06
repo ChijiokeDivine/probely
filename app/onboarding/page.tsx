@@ -65,7 +65,7 @@ function OnboardingPageContent() {
         throw new Error(json.error || "Something went wrong — try again.");
       }
 
-      router.push(next || (role === "admin" ? "/dashboard" : "/inbox"));
+      router.push(next || (role === "admin" ? "/dashboard" : "/reviews"));
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong — try again.");
