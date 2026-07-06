@@ -240,8 +240,8 @@ export default function ScorecardPage() {
                           </div>
                         </div>
                         <div className="bg-black/[0.02] rounded-xl p-4">
-                          <p className="text-[13px] text-black/60 mb-2">Your Score</p>
-                          <div className="text-2xl font-bold text-[#1A0E07]">
+                          <p className="md:text-[13px] text-[10px] text-black/60 mb-2">Your Score</p>
+                          <div className="md:text-[16px] text-[14px] font-bold text-[#1A0E07]">
                             {displayScore}
                           </div>
                         </div>
