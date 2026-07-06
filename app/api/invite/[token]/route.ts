@@ -13,31 +13,44 @@ export async function GET(
 
     // First check if it's a team invite
     const admin = createAdminClient();
+    console.log("Checking team invite for token:", token);
     const { data: teamInvite, error: teamInviteError } = await admin
       .from("team_invites")
       .select("id, email, status, created_at, inviter_id")
       .eq("invite_token", token)
       .single();
 
-    if (teamInviteError) {
-      // If not a team invite, check if it's a review invite
-      const reviewInvite = await getInviteByToken(token);
-      return NextResponse.json({ type: "review", ...reviewInvite });
+    console.log("Team invite error:", teamInviteError);
+    console.log("Team invite data:", teamInvite);
+
+    // Check if the error is a "not found" error (code PGRST116)
+    if (!teamInviteError || teamInviteError.code !== "PGRST116") {
+      if (teamInvite) {
+        // Get inviter's name
+        const { data: inviterProfile } = await admin
+          .from("profiles")
+          .select("full_name")
+          .eq("id", teamInvite.inviter_id)
+          .single();
+
+        return NextResponse.json({ 
+          type: "team", 
+          ...teamInvite, 
+          inviterName: inviterProfile?.full_name 
+        });
+      }
+      // If there's an error that's not "not found", return it
+      if (teamInviteError) {
+        return NextResponse.json({ error: teamInviteError.message }, { status: 500 });
+      }
     }
 
-    // Get inviter's name
-    const { data: inviterProfile } = await admin
-      .from("profiles")
-      .select("full_name")
-      .eq("id", teamInvite.inviter_id)
-      .single();
-
-    return NextResponse.json({ 
-      type: "team", 
-      ...teamInvite, 
-      inviterName: inviterProfile?.full_name 
-    });
+    // If we get here, it's not a team invite, check if it's a review invite
+    console.log("Checking review invite for token:", token);
+    const reviewInvite = await getInviteByToken(token);
+    return NextResponse.json({ type: "review", ...reviewInvite });
   } catch (err) {
+    console.error("Error loading invite:", err);
     return errorResponse(err);
   }
 }
