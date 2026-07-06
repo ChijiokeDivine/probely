@@ -276,7 +276,7 @@ export default function ScorecardPage() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add any additional comments or observations..."
-                className="w-full px-4 py-3 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
+                className="w-full px-4 py-3 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20 text-black/80"
               />
             </div>
 
