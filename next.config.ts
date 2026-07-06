@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
     "/api/reviews/[id]/request-reveal": [
       "./node_modules/.pnpm/node-tfhe@1.4.0-alpha.3/node_modules/node-tfhe/tfhe_bg.wasm",
     ],
+    "/api/reviews/[id]/submit-score": [
+      "./node_modules/.pnpm/node-tfhe@1.4.0-alpha.3/node_modules/node-tfhe/tfhe_bg.wasm",
+    ],
   },
 };
 
