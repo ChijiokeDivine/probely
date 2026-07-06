@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import CountdownTimer from "@/app/components/ui/CountdownTimer";
+import type { RawCategoryScores } from "@/lib/contracts/types";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -85,7 +86,13 @@ export default function ScorecardPage() {
   const [scorecard, setScorecard] = useState<ScorecardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [scores, setScores] = useState<Record<string, number>>({});
+  const [scores, setScores] = useState<RawCategoryScores>({
+    problemSolving: 0,
+    technicalDepth: 0,
+    communication: 0,
+    collaboration: 0,
+    cultureGrowth: 0,
+  });
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -100,10 +107,13 @@ export default function ScorecardPage() {
         setScorecard(data);
         
         // Initialize scores to 0
-        const initialScores: Record<string, number> = {};
-        CATEGORIES.forEach(cat => {
-          initialScores[cat.key] = 0;
-        });
+        const initialScores: RawCategoryScores = {
+          problemSolving: 0,
+          technicalDepth: 0,
+          communication: 0,
+          collaboration: 0,
+          cultureGrowth: 0,
+        };
         setScores(initialScores);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -119,15 +129,29 @@ export default function ScorecardPage() {
   }
 
   async function handleConfirmSubmit() {
+    if (!scorecard) return;
+
     setShowConfirmModal(false);
     setSubmitting(true);
+    setError(null);
+
     try {
-      // TODO: Implement actual submission (call the on-chain submitScores
-      // For now, just show success
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const res = await fetch(`/api/reviews/${scorecard.reviewId}/submit-score`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ scores }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to submit scores");
+      }
+
       setSubmitted(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : "An error occurred while submitting scores");
     } finally {
       setSubmitting(false);
     }
@@ -206,6 +230,12 @@ export default function ScorecardPage() {
           </div>
 
           <div className="p-8">
+            {error && (
+              <div className="mb-6 p-4 rounded-xl border border-red-100 bg-red-50 text-[13.5px] text-red-700">
+                {error}
+              </div>
+            )}
+            
             <div className="mb-8">
               <h2 className="text-lg font-semibold text-[#1A0E07] mb-4">Your Scores</h2>
               <div className="space-y-6">
@@ -226,12 +256,12 @@ export default function ScorecardPage() {
                         type="range"
                         min="0"
                         max="100"
-                        value={scores[category.key] || 0}
+                        value={scores[category.key]}
                         onChange={(e) => setScores({ ...scores, [category.key]: Number(e.target.value) })}
                         className="w-full h-2 bg-black/10 rounded-lg appearance-none cursor-pointer accent-[#1A0E07]"
                       />
                       <div className="text-right text-[13px] text-black/60 font-semibold">
-                        {scores[category.key] || 0}
+                        {scores[category.key]}
                       </div>
                     </div>
                   );
@@ -246,7 +276,7 @@ export default function ScorecardPage() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add any additional comments or observations..."
-                className="w-full px-4 py-3 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20 text-black/80"
+                className="w-full px-4 py-3 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
               />
             </div>
 

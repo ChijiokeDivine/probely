@@ -110,7 +110,13 @@ export async function submitScore(input: SubmitScoreInput) {
 
     await admin
       .from("review_reviewers")
-      .update({ has_submitted: true, tag_mask: tagMask, submitted_at: new Date().toISOString(), submit_tx_hash: txHash })
+      .update({ 
+        has_submitted: true, 
+        tag_mask: tagMask, 
+        submitted_at: new Date().toISOString(), 
+        submit_tx_hash: txHash,
+        status: "submitted"
+      })
       .eq("id", reviewerRow.id);
 
     await admin

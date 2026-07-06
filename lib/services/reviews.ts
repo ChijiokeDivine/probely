@@ -38,16 +38,36 @@ export async function getInviteByToken(token: string) {
 
 export async function declineInvite(token: string, reason?: string) {
   const admin = createAdminClient();
-  // TODO: In a real implementation, we might want to add a 'declined' status to review_reviewers
-  // For now, we're just marking it inactive
+  const { data: reviewerRow, error: reviewerError } = await admin
+    .from("review_reviewers")
+    .select("*, reviews(admin_id, chain_review_id)")
+    .eq("id", token)
+    .single();
+
+  if (reviewerError || !reviewerRow) throw new HttpError(404, "Invite not found");
+
   const { data, error } = await admin
     .from("review_reviewers")
-    .update({ is_active: false })
+    .update({ 
+      status: "declined", 
+      is_active: false,
+      declined_at: new Date().toISOString(),
+      decline_reason: reason
+    })
     .eq("id", token)
     .select("*")
     .single();
 
   if (error || !data) throw new HttpError(404, "Invite not found");
+
+  // Add a review event for the decline
+  await admin.from("review_events").insert({
+    review_id: reviewerRow.review_id,
+    chain_review_id: reviewerRow.reviews?.chain_review_id,
+    event_type: "ReviewerDeclined",
+    payload: { reason: reason || null }
+  });
+
   return { success: true };
 }
 
@@ -57,7 +77,7 @@ export async function getScorecardByToken(token: string) {
     .from("review_reviewers")
     .select("*, reviews(*)")
     .eq("id", token)
-    .eq("is_active", true)
+    .in("status", ["invited", "active"])
     .single();
 
   if (reviewerError || !reviewerRow) throw new HttpError(404, "Scorecard not found");
@@ -266,6 +286,7 @@ export async function createReview(input: CreateReviewInput) {
         review_id: draftRow.id,
         reviewer_id: r.id,
         wallet_address: r.wallet_address,
+        status: "active",
       }))
     );
 
@@ -528,7 +549,7 @@ export async function replaceReviewer({
     .select("*")
     .eq("review_id", reviewId)
     .eq("reviewer_id", oldReviewerProfileId)
-    .eq("is_active", true)
+    .in("status", ["invited", "active"])
     .single();
   if (oldReviewerError || !oldReviewerRow) throw new HttpError(404, "Reviewer to replace is not on this panel");
   if (oldReviewerRow.has_submitted) throw new HttpError(409, "Cannot replace a reviewer who has already submitted");
@@ -538,7 +559,7 @@ export async function replaceReviewer({
     .select("id")
     .eq("review_id", reviewId)
     .eq("reviewer_id", newReviewerProfileId)
-    .eq("is_active", true)
+    .in("status", ["invited", "active"])
     .maybeSingle();
   if (existingNewReviewer) throw new HttpError(409, "New reviewer is already on this panel");
 
@@ -569,13 +590,18 @@ export async function replaceReviewer({
 
     await admin
       .from("review_reviewers")
-      .update({ is_active: false, replaced_by_reviewer_id: newReviewerProfileId })
+      .update({ 
+        status: "replaced", 
+        is_active: false, 
+        replaced_by_reviewer_id: newReviewerProfileId 
+      })
       .eq("id", oldReviewerRow.id);
 
     await admin.from("review_reviewers").insert({
       review_id: reviewId,
       reviewer_id: newReviewerProfileId,
       wallet_address: newReviewerProfile.wallet_address,
+      status: "active",
     });
 
     await admin.from("review_events").upsert(
