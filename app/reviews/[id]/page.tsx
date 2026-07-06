@@ -31,7 +31,7 @@ interface ReviewEvent {
   id: number;
   event_type: string;
   created_at: string;
-  payload: any;
+  payload: unknown;
 }
 
 const TABS = ["Overview", "Activity", "Settings"] as const;
