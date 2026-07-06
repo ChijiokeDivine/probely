@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import jsPDF from "jspdf";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -17,90 +19,246 @@ const CATEGORIES = [
   { key: "cultureGrowth", name: "Culture & Growth" },
 ];
 
-const MOCK_REVIEWER_SCORES = [
-  {
-    name: "Jane Doe",
-    scores: {
-      problemSolving: 85,
-      technicalDepth: 80,
-      communication: 90,
-      collaboration: 88,
-      cultureGrowth: 82,
-    },
-    notes: "Strong problem solver, great communication skills.",
-  },
-  {
-    name: "John Smith",
-    scores: {
-      problemSolving: 78,
-      technicalDepth: 85,
-      communication: 75,
-      collaboration: 80,
-      cultureGrowth: 78,
-    },
-    notes: "Deep technical knowledge, could improve communication.",
-  },
-  {
-    name: "Alice Johnson",
-    scores: {
-      problemSolving: 82,
-      technicalDepth: 78,
-      communication: 88,
-      collaboration: 85,
-      cultureGrowth: 85,
-    },
-    notes: "Great team player, very collaborative.",
-  },
-];
+interface ReviewResults {
+  reviewId: string;
+  reviewerCount: number;
+  categories: Array<{
+    category: string;
+    average: number;
+    stdDev: number;
+  }>;
+  weightedAverageOutOf10: number;
+  revealedAt: string;
+  revealTxHash?: string;
+}
 
-// Calculate averages
-const calculateAverages = () => {
-  const sums: Record<string, number> = {};
-  CATEGORIES.forEach(cat => sums[cat.key] = 0);
-
-  MOCK_REVIEWER_SCORES.forEach(reviewer => {
-    CATEGORIES.forEach(cat => {
-      sums[cat.key] += reviewer.scores[cat.key as keyof typeof reviewer.scores];
-    });
-  });
-
-  const averages: Record<string, number> = {};
-  CATEGORIES.forEach(cat => {
-    averages[cat.key] = Math.round(sums[cat.key] / MOCK_REVIEWER_SCORES.length);
-  });
-
-  return averages;
-};
-
-// Calculate weighted average (mock weights)
-const WEIGHTS = {
-  problemSolving: 25,
-  technicalDepth: 25,
-  communication: 20,
-  collaboration: 15,
-  cultureGrowth: 15,
-};
-
-const calculateWeightedAverage = (scores: Record<string, number>) => {
-  let sum = 0;
-  let totalWeight = 0;
-  Object.entries(WEIGHTS).forEach(([key, weight]) => {
-    sum += scores[key] * weight;
-    totalWeight += weight;
-  });
-  return Math.round(sum / totalWeight);
-};
+interface Review {
+  id: string;
+  candidateRef: string;
+  role: string;
+  status: string;
+  deadline: string;
+}
 
 const getScoreColor = (score: number) => {
-  if (score >= 80) return "#16A34A"; // Green
-  if (score >= 60) return "#D97706"; // Yellow
+  if (score >= 8) return "#16A34A"; // Green
+  if (score >= 6) return "#D97706"; // Yellow
   return "#DC2626"; // Red
 };
 
+const getBlockchainLink = (txHash?: string): string => {
+  if (!txHash) return "";
+  return `https://sepolia.etherscan.io/tx/${txHash}`;
+};
+
 export default function ReviewResultsPage() {
-  const [expandedReviewer, setExpandedReviewer] = useState<string | null>(null);
-  const averages = calculateAverages();
-  const overallWeightedAverage = calculateWeightedAverage(averages);
+  const params = useParams();
+  const reviewId = params.id as string;
+  const [review, setReview] = useState<Review | null>(null);
+  const [results, setResults] = useState<ReviewResults | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  useEffect(() => {
+    async function loadResults() {
+      try {
+        const res = await fetch(`/api/reviews/${reviewId}/results`);
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to load results");
+        }
+        const data = await res.json();
+        setResults(data.results);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function loadReview() {
+      try {
+        const res = await fetch(`/api/reviews/${reviewId}`);
+        if (!res.ok) throw new Error("Failed to load review");
+        const data = await res.json();
+        setReview(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      }
+    }
+
+    loadReview();
+    loadResults();
+  }, [reviewId]);
+
+  const handleExportJSON = () => {
+    if (!results || !review) return;
+
+    const blockchainLink = getBlockchainLink(results.revealTxHash);
+    const overallScore = Math.round(results.weightedAverageOutOf10 * 10) / 10;
+
+    const exportData = {
+      review: {
+        id: review.id,
+        candidateRef: review.candidateRef,
+        role: review.role,
+        status: review.status,
+        deadline: review.deadline,
+      },
+      results: {
+        overallScore,
+        weightedAverage: results.weightedAverageOutOf10,
+        reviewerCount: results.reviewerCount,
+        revealedAt: results.revealedAt,
+        blockchainLink: blockchainLink,
+        categories: results.categories.map(cat => ({
+          category: CATEGORIES.find(c => c.key === cat.category)?.name || cat.category,
+          average: Math.round(cat.average),
+          standardDeviation: parseFloat(cat.stdDev.toFixed(2)),
+        })),
+      },
+      exportedAt: new Date().toISOString(),
+    };
+
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `review-results-${review.candidateRef}-${new Date().getTime()}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setShowExportMenu(false);
+  };
+
+  const handleExportPDF = async () => {
+    if (!results || !review) return;
+
+    setExporting(true);
+    try {
+      const blockchainLink = getBlockchainLink(results.revealTxHash);
+      const overallScore = Math.round(results.weightedAverageOutOf10 * 10) / 10;
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let yPosition = 15;
+
+      // Header
+      pdf.setFontSize(24);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Review Results", pageWidth / 2, yPosition, { align: "center" });
+      yPosition += 12;
+
+      // Review Details
+      pdf.setFontSize(11);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(`Candidate: ${review.candidateRef}`, 15, yPosition);
+      yPosition += 6;
+      pdf.text(`Role: ${review.role}`, 15, yPosition);
+      yPosition += 6;
+      pdf.text(`Status: ${review.status}`, 15, yPosition);
+      yPosition += 6;
+      pdf.text(`Revealed: ${new Date(results.revealedAt).toLocaleDateString()}`, 15, yPosition);
+      yPosition += 10;
+
+      // Overall Score
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Overall Score", 15, yPosition);
+      yPosition += 8;
+
+      pdf.setFontSize(32);
+      pdf.text(`${overallScore}`, 15, yPosition);
+      yPosition += 15;
+
+      // Category Averages
+      pdf.setFontSize(12);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Category Averages", 15, yPosition);
+      yPosition += 8;
+
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      results.categories.forEach(cat => {
+        const categoryName = CATEGORIES.find(c => c.key === cat.category)?.name || cat.category;
+        const score = Math.round(cat.average);
+        pdf.text(`${categoryName}: ${score} (±${cat.stdDev.toFixed(1)})`, 15, yPosition);
+        yPosition += 6;
+      });
+
+      yPosition += 5;
+
+      // Blockchain Link
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Blockchain Verification", 15, yPosition);
+      yPosition += 6;
+
+      pdf.setFont("helvetica", "normal");
+      if (blockchainLink) {
+        pdf.setTextColor(0, 0, 255);
+        pdf.textWithLink(blockchainLink, 15, yPosition, { url: blockchainLink });
+        pdf.setTextColor(0, 0, 0);
+      } else {
+        pdf.text("No blockchain transaction available", 15, yPosition);
+      }
+      yPosition += 8;
+
+      // Export Info
+      pdf.setFontSize(8);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(`Exported on ${new Date().toLocaleString()}`, 15, pageHeight - 10);
+
+      pdf.save(`review-results-${review.candidateRef}-${new Date().getTime()}.pdf`);
+      setShowExportMenu(false);
+    } catch (err) {
+      console.error("PDF export failed:", err);
+      alert("Failed to export PDF");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={`${jakartaSans.className} min-h-screen bg-[#f9f9f9] flex items-center justify-center`}>
+        <div className="text-center">
+          <div className="w-8 h-8 border-3 border-black/10 border-t-[#1A0E07] rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[14px] text-black/60">Loading results...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !results || !review) {
+    return (
+      <div className={`${jakartaSans.className} min-h-screen bg-[#f9f9f9] flex items-center justify-center px-4`}>
+        <div className="text-center max-w-md">
+          <h1 className="text-xl font-bold text-[#1A0E07] mb-2">Results Not Available</h1>
+          <p className="text-[14px] text-black/60 mb-6">
+            {error || "This review has not been revealed yet. Results will be available once all reviewers submit and the admin reveals the scores."}
+          </p>
+          <Link
+            href="/reviews"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors"
+          >
+            Back to reviews
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const overallScore = Math.round(results.weightedAverageOutOf10 * 10) / 10;
+  const blockchainLink = getBlockchainLink(results.revealTxHash);
 
   return (
     <div className={`${jakartaSans.className} min-h-screen bg-[#f9f9f9]`}>
@@ -113,14 +271,44 @@ export default function ReviewResultsPage() {
             </svg>
             Back to reviews
           </Link>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-col md:flex-row gap-4">
             <div>
               <h1 className="text-3xl font-bold text-[#1A0E07] mb-2">Results</h1>
-              <p className="text-[14px] text-black/60">Senior Frontend Engineer • cand_abc123</p>
+              <p className="text-[14px] text-black/60">{review.role} • {review.candidateRef}</p>
             </div>
-            <button className="px-6 py-2.5 rounded-full bg-[#1A0E07] text-white text-[14px] font-semibold hover:bg-[#2b1a0e] transition-colors">
-              Export results
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                disabled={exporting}
+                className="px-6 py-2.5 rounded-full bg-[#1A0E07] text-white text-[14px] font-semibold hover:bg-[#2b1a0e] transition-colors disabled:opacity-50"
+              >
+                {exporting ? "Exporting..." : "Export results"}
+              </button>
+              {showExportMenu && (
+                <div className="absolute top-full mt-2 right-0 bg-white rounded-lg border border-black/[0.07] shadow-lg overflow-hidden z-10">
+                  <button
+                    onClick={handleExportJSON}
+                    className="w-full px-4 py-3 text-left text-[11px] text-[#1A0E07] hover:bg-black/[0.02] transition-colors flex items-center gap-2"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Export as JSON
+                  </button>
+                  <button
+                    onClick={handleExportPDF}
+                    className="w-full px-4 py-3 text-left text-[11px] text-[#1A0E07] hover:bg-black/[0.02] transition-colors border-t border-black/[0.05] flex items-center gap-2"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    Export as PDF
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -128,120 +316,73 @@ export default function ReviewResultsPage() {
         <div className="bg-white rounded-2xl border border-black/[0.07] p-8 mb-6">
           <div className="flex flex-col md:flex-row md:items-center gap-10">
             <div className="flex flex-col items-center justify-center">
-              <div className="text-[64px] font-extrabold mb-2" style={{ color: getScoreColor(overallWeightedAverage) }}>
-                {overallWeightedAverage}
+              <div className="text-[64px] font-extrabold mb-2" style={{ color: getScoreColor(overallScore) }}>
+                {overallScore}
               </div>
               <div className="text-[14px] font-semibold text-[#1A0E07]">Overall score</div>
+              <div className="text-[12px] text-black/50 mt-2">
+                {results.reviewerCount} reviewer{results.reviewerCount !== 1 ? "s" : ""}
+              </div>
             </div>
 
             <div className="flex-1">
               <h2 className="text-lg font-bold text-[#1A0E07] mb-4">Category averages</h2>
               <div className="space-y-4">
-                {CATEGORIES.map(cat => (
-                  <div key={cat.key} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="text-[14px] text-[#1A0E07] font-medium">{cat.name}</div>
-                      <div className="text-[14px] font-bold" style={{ color: getScoreColor(averages[cat.key]) }}>
-                        {averages[cat.key]}
+                {results.categories.map((cat) => {
+                  const categoryName = CATEGORIES.find(c => c.key === cat.category)?.name || cat.category;
+                  const score = Math.round(cat.average);
+                  return (
+                    <div key={cat.category} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="text-[12px] text-[#1A0E07] font-medium">{categoryName}</div>
+                        <div className="flex items-center gap-3">
+                          <div className="text-[14px] font-bold" style={{ color: getScoreColor(score) }}>
+                            {score}
+                          </div>
+                          <div className="text-[12px] text-black/40">±{cat.stdDev.toFixed(1)}</div>
+                        </div>
+                      </div>
+                      <div className="h-3 bg-black/5 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${Math.min(score * 10, 100)}%`,
+                            backgroundColor: getScoreColor(score),
+                          }}
+                        ></div>
                       </div>
                     </div>
-                    <div className="h-3 bg-black/5 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{
-                          width: `${averages[cat.key]}%`,
-                          backgroundColor: getScoreColor(averages[cat.key]),
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Individual reviewer scores */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-[#1A0E07]">Individual reviewer scores</h2>
-          {MOCK_REVIEWER_SCORES.map((reviewer) => (
-            <div
-              key={reviewer.name}
-              className="bg-white rounded-2xl border border-black/[0.07] overflow-hidden"
+        {/* Blockchain Verification */}
+        {blockchainLink && (
+          <div className="bg-grey-50 border border-grey-200 rounded-2xl p-6 mb-6">
+            <p className="text-[14px] text-black/80 mb-2">
+              <span className="font-semibold">Blockchain Verified</span> 
+            </p>
+            <a
+              href={blockchainLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[14px] text-black/60 hover:text-blue-700 underline"
             >
-              <button
-                onClick={() => setExpandedReviewer(expandedReviewer === reviewer.name ? null : reviewer.name)}
-                className="w-full flex items-center justify-between p-6 text-left"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#1A0E07] flex items-center justify-center shrink-0">
-                    <span className="text-white font-bold text-[16px]">{reviewer.name.charAt(0)}</span>
-                  </div>
-                  <div>
-                    <div className="text-[16px] font-semibold text-[#1A0E07]">{reviewer.name}</div>
-                    <div className="text-[13px] text-black/50">
-                      Weighted average: <span className="font-bold" style={{ color: getScoreColor(calculateWeightedAverage(reviewer.scores)) }}>
-                        {calculateWeightedAverage(reviewer.scores)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="hidden md:flex gap-2">
-                    {CATEGORIES.slice(0, 3).map(cat => (
-                      <div
-                        key={cat.key}
-                        className="px-2 py-1 rounded-full text-[12px] font-semibold"
-                        style={{ backgroundColor: `${getScoreColor(reviewer.scores[cat.key as keyof typeof reviewer.scores])}15`, color: getScoreColor(reviewer.scores[cat.key as keyof typeof reviewer.scores]) }}
-                      >
-                        {reviewer.scores[cat.key as keyof typeof reviewer.scores]}
-                      </div>
-                    ))}
-                  </div>
-                  <svg
-                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                    className={`text-black/40 transition-transform duration-200 ${expandedReviewer === reviewer.name ? "rotate-180" : ""}`}
-                  >
-                    <path d="M6 9l6 6 6-6"></path>
-                  </svg>
-                </div>
-              </button>
+              <span className="hidden md:inline break-all">{blockchainLink}</span>
+              <span className="md:hidden">View on Etherscan</span>
+            </a>
+          </div>
+        )}
 
-              {expandedReviewer === reviewer.name && (
-                <div className="px-6 pb-6 border-t border-black/[0.05] pt-4">
-                  <div className="grid gap-6 md:grid-cols-2">
-                    <div className="space-y-4">
-                      <h3 className="text-[14px] font-bold text-[#1A0E07]">Category scores</h3>
-                      {CATEGORIES.map(cat => (
-                        <div key={cat.key} className="space-y-1">
-                          <div className="flex items-center justify-between text-[13px]">
-                            <span className="text-black/60">{cat.name}</span>
-                            <span className="font-bold" style={{ color: getScoreColor(reviewer.scores[cat.key as keyof typeof reviewer.scores]) }}>
-                              {reviewer.scores[cat.key as keyof typeof reviewer.scores]}
-                            </span>
-                          </div>
-                          <div className="h-2 bg-black/5 rounded-full overflow-hidden">
-                            <div
-                              className="h-full rounded-full"
-                              style={{
-                                width: `${reviewer.scores[cat.key as keyof typeof reviewer.scores]}%`,
-                                backgroundColor: getScoreColor(reviewer.scores[cat.key as keyof typeof reviewer.scores]),
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="space-y-2">
-                      <h3 className="text-[14px] font-bold text-[#1A0E07]">Notes</h3>
-                      <p className="text-[14px] text-black/70 leading-relaxed">{reviewer.notes}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+        {/* Reveal info */}
+        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
+          <p className="text-[14px] text-blue-900">
+            <span className="font-semibold">Results revealed</span> on {new Date(results.revealedAt).toLocaleDateString()} at{" "}
+            {new Date(results.revealedAt).toLocaleTimeString()}
+          </p>
         </div>
       </div>
     </div>

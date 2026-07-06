@@ -257,7 +257,7 @@ export default function DashboardPage() {
 
       {/* Alert banners */}
       {metrics.readyToReveal > 0 && (
-        <div className="flex items-center gap-3 bg-[#1A0E07] text-white rounded-2xl px-5 py-3.5 mb-3">
+        <div className="flex items-center gap-3 bg-[#808080]/30 text-black/50 rounded-2xl px-5 py-3.5 mb-3">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
           <span className="text-[13.5px] font-medium flex-1">
             {metrics.readyToReveal} review{metrics.readyToReveal > 1 ? "s are" : " is"} ready to reveal
@@ -446,25 +446,31 @@ export default function DashboardPage() {
         <h2 className="text-[16px] font-bold text-[#1A0E07] mb-3">Resources</h2>
         <p className="text-[13.5px] text-black/50 mb-6">Learn how blind, encrypted review scoring works under the hood</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <ResourceCard
-            title="How FHE keeps scores private"
-            desc="Even Honio can't see individual reviewer scores until reveal."
-            gradient="linear-gradient(135deg,#FFD9EC 0%,#FF9BC7 100%)"
-          />
-          <ResourceCard
-            title="Reading your results on-chain"
-            desc="Every review is verifiable on Sepolia Etherscan."
-            gradient="linear-gradient(135deg,#0B0B0F 0%,#2B2B36 100%)"
-            dark
-          />
+          <Link href="/resources/fhe-privacy">
+            <ResourceCard
+              title="How FHE keeps scores private"
+              desc="Even Honio can't see individual reviewer scores until reveal."
+              url="/web.webp"
+            />
+          </Link>
+          <Link href="/resources/blockchain-verification">
+            <ResourceCard
+              title="Reading your results on-chain"
+              desc="Every review is verifiable on Sepolia Etherscan."
+              url="/101.webp"
+              dark
+            />
+          </Link>
           <div className="hidden md:block">
-          <ResourceCard 
-            title="Designing fair category weights"
-            desc="Presets for engineering, product, design & ops roles."
-            gradient="linear-gradient(135deg,#EDE7FF 0%,#C9B8FF 100%)"
-          />
+            <Link href="/resources/category-weights">
+              <ResourceCard 
+                title="Designing fair category weights"
+                desc="Presets for engineering, product, design & ops roles."
+                url="/chart.webp"
+              />
+            </Link>
           </div>
-\
+
 
 
         </div>
@@ -473,10 +479,12 @@ export default function DashboardPage() {
   );
 }
 
-function ResourceCard({ title, desc, gradient, dark }: { title: string; desc: string; gradient: string; dark?: boolean }) {
+function ResourceCard({ title, desc, url, dark }: { title: string; desc: string; url: string; dark?: boolean }) {
+  const backgroundImage = url.startsWith('linear-gradient') ? url : `url(${url})`;
+  
   return (
-    <div className="rounded-2xl overflow-hidden border border-black/[0.06] bg-white">
-      <div className="h-32" style={{ background: gradient }} />
+    <div className="rounded-2xl overflow-hidden border border-black/[0.06] bg-white hover:border-black/15 hover:shadow-lg transition-all cursor-pointer">
+      <div className="h-32" style={{ backgroundImage }} />
       <div className="p-4">
         <div className={`text-[13.5px] font-bold ${dark ? "text-[#1A0E07]" : "text-[#1A0E07]"}`}>{title}</div>
         <div className="text-[12.5px] text-black/50 mt-1">{desc}</div>
