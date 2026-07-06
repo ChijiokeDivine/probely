@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { HttpError } from "@/lib/auth/authz";
 import { getContractAddress, getPublicClient, getWriteContract, getReadContract } from "@/lib/contracts/client";
 import { BlindReviewAbi } from "../contracts/BlindReview.abi";
-import { getAdminWalletClient } from "@/lib/privy/viemAccount";
+import { getWalletClientForProfile } from "@/lib/privy/viemAccount";
 import { encryptReviewScores } from "@/lib/fhe/encryptScores";
 import { recordPendingTransaction, markTransactionConfirmed, markTransactionFailed } from "@/lib/services/activity";
 import { createNotification } from "@/lib/services/notifications";
@@ -53,7 +53,11 @@ export async function submitScore(input: SubmitScoreInput) {
   }
 
   const tagMask = encodeTagMask(input.selectedTagBits ?? []);
-  const reviewerAddress = getAddress(reviewerProfile.wallet_address);
+  const reviewerAddress = getAddress(reviewerRow.wallet_address);
+  const profileAddress = getAddress(reviewerProfile.wallet_address);
+  if (reviewerAddress !== profileAddress) {
+    throw new HttpError(409, "Your reviewer wallet changed after the invitation was created");
+  }
 
   const walletTxId = await recordPendingTransaction({
     profileId: input.reviewerProfileId,
@@ -73,9 +77,17 @@ export async function submitScore(input: SubmitScoreInput) {
       throw new HttpError(409, "You have already submitted scores for this review (on-chain)");
     }
 
+    const isInvitedReviewer = await readContract.read.isInvitedReviewer([
+      BigInt(review.chain_review_id),
+      reviewerAddress,
+    ]);
+    if (!isInvitedReviewer) {
+      throw new HttpError(409, "The connected reviewer wallet is not currently invited on-chain for this review");
+    }
+
     const encrypted = await encryptReviewScores(getContractAddress(), reviewerAddress, input.scores);
 
-    const walletClient = getAdminWalletClient();
+    const walletClient = getWalletClientForProfile(reviewerProfile);
     const contract = getWriteContract(walletClient);
 
     const txHash = await contract.write.submitScores([

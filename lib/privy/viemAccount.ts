@@ -1,5 +1,5 @@
-import { createWalletClient, http, type Address, type WalletClient, type Transport, type Chain } from "viem";
-import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts"; // <-- Fixed import
+import { createWalletClient, http, type Account, type Address, type WalletClient, type Transport, type Chain } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { createViemAccount } from "@privy-io/node/viem";
 import { getPrivyClient } from "@/lib/privy";
 import { sepolia } from "@/lib/contracts/client";
@@ -13,7 +13,7 @@ function getRpcUrl(): string {
 /**
  * Builds a viem WalletClient for the admin paymaster wallet that signs all transactions!
  */
-export function getAdminWalletClient(): WalletClient<Transport, Chain, PrivateKeyAccount> {
+export function getAdminWalletClient(): WalletClient<Transport, Chain, Account> {
   let privateKey = process.env.ADMIN_PRIVATE_KEY;
   const adminAddress = process.env.ADMIN_WALLET_ADDRESS;
   if (!privateKey || !adminAddress) {
@@ -41,10 +41,10 @@ export function getWalletClientForWallet({
 }: {
   walletId: string;
   address: Address;
-}): WalletClient<Transport, Chain, any> { // <-- Using 'any' or Custom Privy Account type bypasses viem's strict internal Account mismatch
+}): WalletClient<Transport, Chain, Account> {
   const privy = getPrivyClient();
-  const account = createViemAccount(privy as any, { walletId, address });
-  
+  const account = createViemAccount(privy as never, { walletId, address }) as unknown as Account;
+
   return createWalletClient({
     account,
     chain: sepolia,
@@ -56,7 +56,7 @@ export function getWalletClientForWallet({
 export function getWalletClientForProfile(profile: {
   privy_wallet_id: string | null;
   wallet_address: string | null;
-}): WalletClient<Transport, Chain, any> { 
+}): WalletClient<Transport, Chain, Account> {
   if (!profile.privy_wallet_id || !profile.wallet_address) {
     throw new Error("Profile has no provisioned wallet yet");
   }
