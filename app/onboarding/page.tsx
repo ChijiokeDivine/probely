@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
@@ -25,7 +25,7 @@ function useViewportWidth() {
 
 type Role = "admin" | "reviewer";
 
-export default function OnboardingPage() {
+function OnboardingPageContent() {
   const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [role, setRole] = useState<Role | null>(null);
@@ -269,6 +269,14 @@ export default function OnboardingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">Loading...</div>}>
+      <OnboardingPageContent />
+    </Suspense>
   );
 }
 

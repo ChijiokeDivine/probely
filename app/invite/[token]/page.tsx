@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
@@ -33,7 +33,7 @@ interface ReviewInvite {
 
 type InviteData = TeamInvite | ReviewInvite;
 
-export default function InvitePage() {
+function InvitePageContent() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -341,4 +341,12 @@ export default function InvitePage() {
   }
 
   return null;
+}
+
+export default function InvitePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">Loading...</div>}>
+      <InvitePageContent />
+    </Suspense>
+  );
 }

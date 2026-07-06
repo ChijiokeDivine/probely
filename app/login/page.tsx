@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { createClient } from "@/lib/supabase/client";
@@ -25,7 +25,7 @@ function useViewportWidth() {
   return width;
 }
 
-export default function LoginPage() {
+function LoginPageContent() {
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -83,8 +83,6 @@ export default function LoginPage() {
       setGoogleLoading(false);
     }
   }
-
-  
 
   return (
     <div className={`min-h-screen w-full flex flex-col ${mounted ? "ready" : ""} ${jakartaSans.className}`}>
@@ -306,7 +304,8 @@ export default function LoginPage() {
 
                 disabled:opacity-60
                 disabled:cursor-not-allowed
-              ">
+              "
+            >
               {loading ? "Logging in…" : "Log in"}
             </button>
           </form>
@@ -381,6 +380,14 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">Loading...</div>}>
+      <LoginPageContent />
+    </Suspense>
   );
 }
 
