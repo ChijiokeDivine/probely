@@ -127,7 +127,7 @@ export default function SettingsPage() {
                   required
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
+                  className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20 text-black/60"
                 />
               </div>
 
@@ -153,7 +153,7 @@ export default function SettingsPage() {
                   type="text"
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
+                  className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20 text-black/60"
                   placeholder="Enter your company name"
                 />
               </div>

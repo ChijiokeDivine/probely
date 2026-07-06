@@ -131,12 +131,12 @@ export default function CandidatesPage() {
         </div>
         <button
           onClick={() => setShowNewCandidateModal(true)}
-          className="px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors flex items-center gap-2"
+          className="px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors flex items-center gap-1"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M12 5v14M5 12h14"></path>
           </svg>
-          Add <span className="hidden md:block">Candidate</span>
+          Add <span className="hidden md:block">candidate</span>
         </button>
       </div>
 
@@ -229,7 +229,7 @@ export default function CandidatesPage() {
                   required
                   value={newCandidate.fullName}
                   onChange={(e) => setNewCandidate({ ...newCandidate, fullName: e.target.value })}
-                  className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
+                  className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20 text-black/60"
                 />
               </div>
               <div>
@@ -317,7 +317,7 @@ export default function CandidatesPage() {
                       required
                       value={editCandidate.fullName}
                       onChange={(e) => setEditCandidate({ ...editCandidate, fullName: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20"
+                      className="w-full px-4 py-2 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-black/20 text-black/60"
                     />
                   </div>
                   <div>

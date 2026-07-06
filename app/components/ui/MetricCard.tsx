@@ -17,7 +17,7 @@ export default function MetricCard({
       </div>
       <div className="min-w-0">
         <div className="text-[20px] font-bold text-[#1A0E07] leading-tight truncate">{value}</div>
-        <div className="text-[12.5px] text-black/45 truncate">{label}</div>
+        <div className="md:text-[13px] text-[11px] text-black/45 truncate">{label}</div>
       </div>
       {hint && <div className="ml-auto text-[11px] text-black/35 hidden sm:block">{hint}</div>}
     </div>

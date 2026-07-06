@@ -1,7 +1,7 @@
-import { parseEther, type Address } from "viem";
+import { parseEther, type Address, createWalletClient, http } from "viem";
 import { getPublicClient } from "@/lib/contracts/client";
-import { getOperatorWallet } from "@/lib/privy/operatorWallet";
-import { getWalletClientForWallet } from "@/lib/privy/viemAccount";
+import { sepolia } from "viem/chains";
+import { privateKeyToAccount } from "viem/accounts";
 
 /** Drip amount per wallet. ~enough for a few dozen contract calls on Sepolia. */
 const DRIP_AMOUNT_ETH = process.env.GAS_DRIP_AMOUNT_ETH ?? "0.02";
@@ -30,6 +30,13 @@ export interface FundingResult {
 export async function ensureWalletFunded(address: Address): Promise<FundingResult> {
   const publicClient = getPublicClient();
 
+  // Check if admin wallet is configured
+  const adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
+  const adminWalletAddress = process.env.ADMIN_WALLET_ADDRESS as Address;
+  if (!adminPrivateKey || !adminWalletAddress) {
+    return { funded: false, reason: "error", error: "ADMIN_PRIVATE_KEY or ADMIN_WALLET_ADDRESS not configured" };
+  }
+
   let balance: bigint;
   try {
     balance = await publicClient.getBalance({ address });
@@ -43,18 +50,22 @@ export async function ensureWalletFunded(address: Address): Promise<FundingResul
   }
 
   try {
-    const operator = await getOperatorWallet();
-    const operatorBalance = await publicClient.getBalance({ address: operator.address });
+    const adminAccount = privateKeyToAccount(adminPrivateKey as `0x${string}`);
+    const walletClient = createWalletClient({
+      account: adminAccount,
+      chain: sepolia,
+      transport: http(process.env.NEXT_PUBLIC_RPC_URL ?? "https://rpc.sepolia.org"),
+    });
+
+    const adminBalance = await publicClient.getBalance({ address: adminWalletAddress });
     const dripAmount = parseEther(DRIP_AMOUNT_ETH);
 
-    if (operatorBalance < dripAmount) {
+    if (adminBalance < dripAmount) {
       return { funded: false, reason: "operator_unfunded" };
     }
 
-    const walletClient = getWalletClientForWallet(operator);
     const txHash = await walletClient.sendTransaction({
-      chain: undefined,
-      account: walletClient.account!,
+      account: adminAccount,
       to: address,
       value: dripAmount,
     });

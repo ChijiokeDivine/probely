@@ -80,12 +80,12 @@ export default function TeamPage() {
         </div>
         <button
           onClick={() => setShowInviteModal(true)}
-          className="px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors flex items-center gap-2"
+          className="px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors flex items-center gap-1"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M12 5v14M5 12h14"></path>
           </svg>
-          Invite <span className="hidden md:block">Member</span>
+          Invite <span className="hidden md:block">member</span>
         </button>
       </div>
 
@@ -111,12 +111,12 @@ export default function TeamPage() {
           <p className="text-[14px] text-black/60 mb-6">Invite your first team member to start collaborating</p>
           <button
             onClick={() => setShowInviteModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors"
+            className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M12 5v14M5 12h14"></path>
             </svg>
-            Invite <span className="hidden md:block">First</span> Member
+            Invite <span className="hidden md:block">first</span> member
           </button>
         </div>
       ) : (

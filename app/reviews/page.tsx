@@ -61,16 +61,16 @@ export default function ReviewsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[#1A0E07] mb-2">Reviews</h1>
-          <p className="text-[14px] text-black/60">Manage and track all your candidate reviews</p>
+          <p className="text-[12px] md:text-[14px] text-black/60">Manage and track all your candidate reviews</p>
         </div>
         <Link
           href="/reviews/new"
-          className="px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors flex items-center gap-2"
+          className="px-4 py-2 rounded-full md:text-[14px] text-[12px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors flex items-center gap-1"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M12 5v14M5 12h14"></path>
           </svg>
-          New <span className="hidden md:block">Review</span>
+          New <span className="hidden md:block">review</span>
         </Link>
       </div>
 
@@ -88,15 +88,15 @@ export default function ReviewsPage() {
             />
           </div>
           <h2 className="text-lg font-bold text-[#1A0E07] mb-2">No reviews yet</h2>
-          <p className="text-[14px] text-black/60 mb-6">Create your first review to start evaluating candidates</p>
+          <p className="text-[12px] md:text-[14px] text-black/60 mb-6">Create your first review to start evaluating candidates</p>
           <Link
             href="/reviews/new"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full md:text-[14px] text-[12px] font-semibold bg-[#1A0E07] text-white hover:bg-[#2b1a0e] transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M12 5v14M5 12h14"></path>
             </svg>
-            Create <span className="hidden md:block">First</span> Review
+            Create review
           </Link>
         </div>
       ) : (

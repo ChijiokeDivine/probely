@@ -173,7 +173,7 @@ export default function AnalyticsPage() {
             <button
               key={range.key}
               onClick={() => setTimeRange(range.key as any)}
-              className={`px-4 py-2 rounded-full text-[13px] font-semibold transition-all ${
+              className={`px-4 py-2 rounded-full md:text-[13px] text-[9px] font-semibold transition-all ${
                 timeRange === range.key ? "bg-[#1A0E07] text-white" : "text-black/50 hover:text-black/70"
               }`}
             >
@@ -296,7 +296,7 @@ export default function AnalyticsPage() {
         ) : (
           (reviews ?? []).length === 0 ? (
             <div className="flex flex-col items-center justify-center text-center px-6 py-16">
-              <p className="text-[14px] text-black/50 mb-4 max-w-[280px]">
+              <p className="text-[12px] md:text-[14px] text-black/50 mb-4 max-w-[280px]">
                 No reviews yet. Create your first review to see analytics.
               </p>
             </div>

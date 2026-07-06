@@ -351,7 +351,7 @@ export default function DashboardPage() {
                 style={{ width: "150px", height: "150px" }}
               />
             </div>
-            <p className="text-[14px] text-black/50 mb-4 max-w-[280px]">
+            <p className="text-[12px] md:text-[14px] text-black/50 mb-4 max-w-[280px]">
               No reviews yet. Create your first review.
             </p>
             <Link href="/reviews/new" className="px-4 py-2 rounded-full

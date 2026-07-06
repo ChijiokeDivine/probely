@@ -3,10 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { HttpError } from "@/lib/auth/authz";
 import { getPublicClient, getWriteContract, getReadContract } from "@/lib/contracts/client";
 import { BlindReviewAbi } from "../contracts/BlindReview.abi";
-import { getWalletClientForProfile } from "@/lib/privy/viemAccount";
-import { getOperatorWallet } from "@/lib/privy/operatorWallet";
-import { getWalletClientForWallet } from "@/lib/privy/viemAccount";
-import { ensureWalletFunded } from "@/lib/services/walletFunding";
+import { getWalletClientForProfile, getAdminWalletClient } from "@/lib/privy/viemAccount";
 import { publicDecryptRevealHandles } from "@/lib/fhe/publicDecrypt";
 import { recordPendingTransaction, markTransactionConfirmed, markTransactionFailed } from "@/lib/services/activity";
 import { createNotification, createNotificationsForMany } from "@/lib/services/notifications";
@@ -42,7 +39,7 @@ export async function requestReveal({ reviewId, requestedByProfileId }: { review
   const walletTxId = await recordPendingTransaction({ profileId: requestedByProfileId, action: "request_reveal", reviewId });
 
   try {
-    const walletClient = getWalletClientForProfile(adminProfile);
+    const walletClient = getAdminWalletClient();
     const contract = getWriteContract(walletClient);
     const txHash = await contract.write.requestReveal([BigInt(review.chain_review_id)]);
 
@@ -118,7 +115,6 @@ export async function finalizeReveal({ reviewId }: { reviewId: string }) {
 
   await admin.from("review_reveals").update({ status: "decrypting" }).eq("review_id", reviewId);
 
-  const operator = await getOperatorWallet();
   const walletTxId = await recordPendingTransaction({ profileId: review.admin_id, action: "finalize_reveal", reviewId });
 
   try {
@@ -134,8 +130,7 @@ export async function finalizeReveal({ reviewId }: { reviewId: string }) {
       })
       .eq("review_id", reviewId);
 
-    await ensureWalletFunded(operator.address);
-    const walletClient = getWalletClientForWallet(operator);
+    const walletClient = getAdminWalletClient();
     const contract = getWriteContract(walletClient);
 
     const txHash = await contract.write.submitRevealedScores([

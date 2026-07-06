@@ -3,8 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { HttpError } from "@/lib/auth/authz";
 import { getPublicClient, getWriteContract, getReadContract } from "@/lib/contracts/client";
 import { BlindReviewAbi } from "../contracts/BlindReview.abi";
-import { getWalletClientForProfile } from "@/lib/privy/viemAccount";
-import { ensureWalletFunded } from "@/lib/services/walletFunding";
+import { getWalletClientForProfile, getAdminWalletClient } from "@/lib/privy/viemAccount";
 import { recordPendingTransaction, markTransactionConfirmed, markTransactionFailed } from "@/lib/services/activity";
 import { createNotification, createNotificationsForMany } from "@/lib/services/notifications";
 import {
@@ -217,10 +216,7 @@ export async function createReview(input: CreateReviewInput) {
   });
 
   try {
-    const adminAddress = getAddress(adminProfile.wallet_address) as Address;
-    await ensureWalletFunded(adminAddress);
-
-    const walletClient = getWalletClientForProfile(adminProfile);
+    const walletClient = getAdminWalletClient();
     const contract = getWriteContract(walletClient);
 
     const reviewerAddresses = reviewers.map((r) => getAddress(r.wallet_address));
@@ -363,7 +359,7 @@ export async function cancelReview({ reviewId, requestedByProfileId }: { reviewI
   const walletTxId = await recordPendingTransaction({ profileId: requestedByProfileId, action: "cancel_review", reviewId });
 
   try {
-    const walletClient = getWalletClientForProfile(adminProfile);
+    const walletClient = getAdminWalletClient();
     const contract = getWriteContract(walletClient);
     const txHash = await contract.write.cancelReview([BigInt(review.chain_review_id)]);
 
@@ -443,7 +439,7 @@ export async function extendDeadline({
   const walletTxId = await recordPendingTransaction({ profileId: requestedByProfileId, action: "extend_deadline", reviewId });
 
   try {
-    const walletClient = getWalletClientForProfile(adminProfile);
+    const walletClient = getAdminWalletClient();
     const contract = getWriteContract(walletClient);
     const txHash = await contract.write.extendDeadline([BigInt(review.chain_review_id), newDeadlineEpoch]);
 
@@ -540,7 +536,7 @@ export async function replaceReviewer({
   const walletTxId = await recordPendingTransaction({ profileId: requestedByProfileId, action: "replace_reviewer", reviewId });
 
   try {
-    const walletClient = getWalletClientForProfile(adminProfile);
+    const walletClient = getAdminWalletClient();
     const contract = getWriteContract(walletClient);
     const txHash = await contract.write.replaceReviewer([
       BigInt(review.chain_review_id),

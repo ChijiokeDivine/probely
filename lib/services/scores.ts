@@ -3,8 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { HttpError } from "@/lib/auth/authz";
 import { getContractAddress, getPublicClient, getWriteContract, getReadContract } from "@/lib/contracts/client";
 import { BlindReviewAbi } from "../contracts/BlindReview.abi";
-import { getWalletClientForProfile } from "@/lib/privy/viemAccount";
-import { ensureWalletFunded } from "@/lib/services/walletFunding";
+import { getAdminWalletClient } from "@/lib/privy/viemAccount";
 import { encryptReviewScores } from "@/lib/fhe/encryptScores";
 import { recordPendingTransaction, markTransactionConfirmed, markTransactionFailed } from "@/lib/services/activity";
 import { createNotification } from "@/lib/services/notifications";
@@ -74,11 +73,9 @@ export async function submitScore(input: SubmitScoreInput) {
       throw new HttpError(409, "You have already submitted scores for this review (on-chain)");
     }
 
-    await ensureWalletFunded(reviewerAddress);
-
     const encrypted = await encryptReviewScores(getContractAddress(), reviewerAddress, input.scores);
 
-    const walletClient = getWalletClientForProfile(reviewerProfile);
+    const walletClient = getAdminWalletClient();
     const contract = getWriteContract(walletClient);
 
     const txHash = await contract.write.submitScores([
