@@ -25,6 +25,7 @@ interface Review {
   created_at: string;
   review_reviewers: Reviewer[];
   admin_id: string;
+  create_tx_hash?: string | null;
 }
 
 interface ReviewEvent {
@@ -375,24 +376,77 @@ export default function ReviewDetailsPage() {
       )}
 
       {activeTab === "Settings" && (
-        <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
-          <h2 className="text-lg font-bold text-[#1A0E07] mb-6">Review settings</h2>
-          <div className="space-y-6">
-            <div className="p-4 rounded-xl border border-yellow-200 bg-yellow-50">
-              <div className="flex items-start gap-3">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" className="shrink-0">
-                  <path d="M12 9v4"></path>
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
-                  <circle cx="12" cy="16" r="1"></circle>
-                </svg>
-                <div>
-                  <h3 className="text-[14px] font-bold text-[#1A0E07] mb-1">Review is active</h3>
-                  <p className="text-[13px] text-black/60">
-                    Settings cannot be modified while a review is active.
-                  </p>
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
+            <h2 className="text-lg font-bold text-[#1A0E07] mb-6">Review settings</h2>
+            <div className="space-y-6">
+              <div className="p-4 rounded-xl border border-yellow-200 bg-yellow-50">
+                <div className="flex items-start gap-3">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" className="shrink-0">
+                    <path d="M12 9v4"></path>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                    <circle cx="12" cy="16" r="1"></circle>
+                  </svg>
+                  <div>
+                    <h3 className="text-[14px] font-bold text-[#1A0E07] mb-1">Review is active</h3>
+                    <p className="text-[13px] text-black/60">
+                      Settings cannot be modified while a review is active.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
+            <h2 className="text-lg font-bold text-[#1A0E07] mb-4">Blockchain Details</h2>
+            {review.create_tx_hash ? (
+              <div className="space-y-4">
+                <p className="text-[13px] text-black/60 leading-relaxed">
+                  This review is permanently recorded on the blockchain. You can view the transaction details, verification status, and smart contract execution on Blockscout.
+                </p>
+                <div className="p-4 rounded-xl border border-black/[0.05] bg-black/[0.01] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[12px] text-black/40 font-medium">Transaction Hash</div>
+                      <div className="text-[13px] font-mono text-[#1A0E07] truncate max-w-[250px] sm:max-w-xs md:max-w-md">
+                        {review.create_tx_hash}
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    href={`https://eth-sepolia.blockscout.com/tx/${review.create_tx_hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-[#1A0E07] text-white text-[13px] font-semibold hover:bg-[#2b1a0e] transition-colors shrink-0"
+                  >
+                    <span>View on Blockscout</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl border border-black/[0.05] bg-black/[0.01] text-center py-6">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-black/35 mb-2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <div className="text-[13px] text-black/60 font-semibold">No transaction hash available</div>
+                <div className="text-[12px] text-black/40 mt-0.5">This review may not be finalized on the blockchain yet.</div>
+              </div>
+            )}
           </div>
         </div>
       )}
