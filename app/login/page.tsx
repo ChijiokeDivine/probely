@@ -5,6 +5,7 @@ import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { createClient } from "@/lib/supabase/client";
+import { getBaseUrl } from "@/lib/utils";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -72,10 +73,11 @@ function LoginPageContent() {
   async function handleGoogleLogin() {
     setError("");
     setGoogleLoading(true);
+    const baseUrl = getBaseUrl();
 
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
+      options: { redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent(next)}` },
     });
 
     if (oauthError) {

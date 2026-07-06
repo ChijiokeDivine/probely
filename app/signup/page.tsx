@@ -5,6 +5,7 @@ import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { createClient } from "@/lib/supabase/client";
+import { getBaseUrl } from "@/lib/utils";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -53,12 +54,13 @@ function SignupPageContent() {
     const email = String(form.get("email") ?? "");
     const password = String(form.get("password") ?? "");
 
+    const baseUrl = getBaseUrl();
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { name },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        emailRedirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
 
@@ -88,10 +90,11 @@ function SignupPageContent() {
   async function handleGoogleSignup() {
     setError("");
     setGoogleLoading(true);
+    const baseUrl = getBaseUrl();
 
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
+      options: { redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent(next)}` },
     });
 
     if (oauthError) {

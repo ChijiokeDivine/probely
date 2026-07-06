@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { createClient } from "@/lib/supabase/client";
+import { getBaseUrl } from "@/lib/utils";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -44,8 +45,9 @@ export default function ForgotPasswordPage() {
     const form = new FormData(e.currentTarget);
     const email = String(form.get("email") ?? "");
 
+    const baseUrl = getBaseUrl();
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+      redirectTo: `${baseUrl}/auth/callback?next=/reset-password`,
     });
 
     setLoading(false);
