@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { AutoAdvanceAction } from "@/lib/contracts/constants";
 import Link from "next/link";
 
 const jakartaSans = Plus_Jakarta_Sans({
@@ -27,8 +28,8 @@ interface FormData {
     enabled: boolean;
     passThreshold: number;
     failThreshold: number;
-    passAction: string;
-    failAction: string;
+    passAction: AutoAdvanceAction;
+    failAction: AutoAdvanceAction;
   };
   notesForReviewers: string;
 }
@@ -84,8 +85,8 @@ function NewReviewContent() {
       enabled: false,
       passThreshold: 75,
       failThreshold: 40,
-      passAction: "Next round",
-      failAction: "Send rejection",
+      passAction: AutoAdvanceAction.AdvanceToNextRound,
+      failAction: AutoAdvanceAction.SendRejection,
     },
     notesForReviewers: "",
   });
@@ -105,7 +106,25 @@ function NewReviewContent() {
             collaboration: (template.categoryWeights?.collaboration || 15) * 100,
             cultureGrowth: (template.categoryWeights?.cultureGrowth || 15) * 100,
           },
-          autoAdvanceRule: template.autoAdvanceRule || prev.autoAdvanceRule,
+          // Defensive coercion: older saved templates may have stored
+          // passAction/failAction as display strings (e.g. "Next round")
+          // instead of AutoAdvanceAction enum numbers. Number("Next round")
+          // is NaN, so we fall back to a sane default in that case.
+          autoAdvanceRule: template.autoAdvanceRule
+            ? {
+                enabled: !!template.autoAdvanceRule.enabled,
+                passThreshold: Number(template.autoAdvanceRule.passThreshold) || prev.autoAdvanceRule.passThreshold,
+                failThreshold: Number(template.autoAdvanceRule.failThreshold) || prev.autoAdvanceRule.failThreshold,
+                passAction:
+                  Number.isFinite(Number(template.autoAdvanceRule.passAction))
+                    ? (Number(template.autoAdvanceRule.passAction) as AutoAdvanceAction)
+                    : AutoAdvanceAction.AdvanceToNextRound,
+                failAction:
+                  Number.isFinite(Number(template.autoAdvanceRule.failAction))
+                    ? (Number(template.autoAdvanceRule.failAction) as AutoAdvanceAction)
+                    : AutoAdvanceAction.SendRejection,
+              }
+            : prev.autoAdvanceRule,
           notesForReviewers: template.notesForReviewers || prev.notesForReviewers,
         }));
       } catch (e) {
@@ -179,9 +198,29 @@ function NewReviewContent() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      // TODO: Submit to API
-      await new Promise(r => setTimeout(r, 1000));
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          candidateId: formData.candidateId,
+          role: formData.role,
+          reviewerProfileIds: formData.reviewerProfileIds,
+          deadlineAt: formData.deadlineAt,
+          categoryWeights: formData.categoryWeights,
+          autoAdvanceRule: formData.autoAdvanceRule,
+          notesForReviewers: formData.notesForReviewers,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Failed to create review");
+      }
+
       router.push("/reviews");
+      router.refresh();
     } catch (err) {
       console.error(err);
     } finally {
@@ -420,12 +459,15 @@ function NewReviewContent() {
                           value={formData.autoAdvanceRule.passAction}
                           onChange={(e) => setFormData({
                             ...formData,
-                            autoAdvanceRule: { ...formData.autoAdvanceRule, passAction: e.target.value }
+                            autoAdvanceRule: {
+                              ...formData.autoAdvanceRule,
+                              passAction: Number(e.target.value) as AutoAdvanceAction,
+                            },
                           })}
                           className="text-black px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
                         >
-                          <option value="Next round">Next round</option>
-                          <option value="Send offer">Send offer</option>
+                          <option value={AutoAdvanceAction.AdvanceToNextRound}>Next round</option>
+                          <option value={AutoAdvanceAction.SendOffer}>Send offer</option>
                         </select>
                       </div>
                     </div>
@@ -450,12 +492,15 @@ function NewReviewContent() {
                           value={formData.autoAdvanceRule.failAction}
                           onChange={(e) => setFormData({
                             ...formData,
-                            autoAdvanceRule: { ...formData.autoAdvanceRule, failAction: e.target.value }
+                            autoAdvanceRule: {
+                              ...formData.autoAdvanceRule,
+                              failAction: Number(e.target.value) as AutoAdvanceAction,
+                            },
                           })}
                           className="text-black px-3 py-2 rounded-lg border border-black/10 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#1A0E07]/20"
                         >
-                          <option value="Send rejection">Send rejection</option>
-                          <option value="No action">No action</option>
+                          <option value={AutoAdvanceAction.SendRejection}>Send rejection</option>
+                          <option value={AutoAdvanceAction.None}>No action</option>
                         </select>
                       </div>
                     </div>

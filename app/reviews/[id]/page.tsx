@@ -6,12 +6,33 @@ import Link from "next/link";
 import StatusBadge from "@/app/components/ui/StatusBadge";
 import CountdownTimer from "@/app/components/ui/CountdownTimer";
 
-// Mock reviewers data
-const MOCK_REVIEWERS = [
-  { id: "1", name: "Jane Doe", hasSubmitted: true, submittedAt: "2024-05-15T14:30:00Z" },
-  { id: "2", name: "John Smith", hasSubmitted: false },
-  { id: "3", name: "Alice Johnson", hasSubmitted: true, submittedAt: "2024-05-16T09:15:00Z" },
-];
+interface Reviewer {
+  id: string;
+  reviewer_id: string;
+  profiles: { id: string; full_name: string | null };
+  has_submitted: boolean;
+  submitted_at: string | null;
+}
+
+interface Review {
+  id: string;
+  role: string;
+  candidate_ref: string;
+  deadline: string;
+  reviewer_count: number;
+  submitted_count: number;
+  status: "draft" | "pending_tx" | "active" | "reveal_requested" | "revealed" | "cancelled" | "failed";
+  created_at: string;
+  review_reviewers: Reviewer[];
+  admin_id: string;
+}
+
+interface ReviewEvent {
+  id: number;
+  event_type: string;
+  created_at: string;
+  payload: any;
+}
 
 const TABS = ["Overview", "Activity", "Settings"] as const;
 type TabType = typeof TABS[number];
@@ -23,35 +44,36 @@ export default function ReviewDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [revealLoading, setRevealLoading] = useState(false);
   const [revealStatus, setRevealStatus] = useState<"idle" | "requesting" | "decrypting" | "storing">("idle");
-
-  const review = {
-    id: params.id as string,
-    role: "Senior Frontend Engineer",
-    candidateRef: "cand_abc123",
-    deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-    reviewerCount: 3,
-    submittedCount: 2,
-    status: "active" as const,
-  };
-
-  const allSubmitted = review.submittedCount === review.reviewerCount;
-  const deadlinePassed = new Date(review.deadline) < new Date();
-  const canReveal = allSubmitted || deadlinePassed;
+  const [review, setReview] = useState<Review | null>(null);
+  const [events, setEvents] = useState<ReviewEvent[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 500);
-  }, []);
+    async function loadData() {
+      try {
+        const res = await fetch(`/api/reviews/${params.id}`);
+        if (!res.ok) throw new Error("Failed to load review");
+        const data = await res.json();
+        setReview(data.review);
+        setEvents(data.events);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [params.id]);
 
   const handleReveal = async () => {
     if (!confirm("Are you sure you want to reveal the results?")) return;
     setRevealStatus("requesting");
     setRevealLoading(true);
 
-    // Simulate the reveal process
     setTimeout(() => setRevealStatus("decrypting"), 1000);
     setTimeout(() => setRevealStatus("storing"), 2000);
     setTimeout(() => {
-      router.push(`/reviews/${review.id}/results`);
+      router.push(`/reviews/${review?.id}/results`);
     }, 3000);
   };
 
@@ -64,8 +86,68 @@ export default function ReviewDetailsPage() {
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    return `${diffHours}h ago`;
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) return `${diffDays}d ago`;
+    if (diffHours > 0) return `${diffHours}h ago`;
+    if (diffMinutes > 0) return `${diffMinutes}m ago`;
+    return "Just now";
+  };
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case "ReviewCreated":
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A0E07" strokeWidth="2">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+        );
+      case "ReviewCancelled":
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2">
+            <path d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        );
+      case "ReviewerReplaced":
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <path d="M20 8v6M23 11h-6"></path>
+          </svg>
+        );
+      case "DeadlineExtended":
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        );
+      default:
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+          </svg>
+        );
+    }
+  };
+
+  const getActivityText = (event: ReviewEvent) => {
+    switch (event.event_type) {
+      case "ReviewCreated":
+        return "You created the review";
+      case "ReviewCancelled":
+        return "You cancelled the review";
+      case "ReviewerReplaced":
+        return "You replaced a reviewer";
+      case "DeadlineExtended":
+        return "You extended the deadline";
+      default:
+        return "Review activity";
+    }
   };
 
   if (loading) {
@@ -80,6 +162,21 @@ export default function ReviewDetailsPage() {
     );
   }
 
+  if (error || !review) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
+          <h2 className="text-lg font-bold text-red-700 mb-2">Error loading review</h2>
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const allSubmitted = review.submitted_count === review.reviewer_count;
+  const deadlinePassed = new Date(review.deadline) < new Date();
+  const canReveal = allSubmitted || deadlinePassed;
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Header */}
@@ -91,23 +188,23 @@ export default function ReviewDetailsPage() {
           Back to reviews
         </Link>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
+          <div >
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-2xl font-bold text-[#1A0E07]">{review.role}</h1>
               <StatusBadge status={review.status} />
             </div>
-            <p className="text-[14px] text-black/60">Candidate: {review.candidateRef}</p>
+            <p className="text-[14px] text-black/60">Candidate: {review.candidate_ref}</p>
           </div>
 
           {/* Quick actions */}
-          <div className="flex gap-2">
-            <button className="px-4 py-2 rounded-full border border-black/10 text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors">
-              Send reminder to all
+          <div className="flex gap-2 md:mb-0 mb-[30px]">
+            <button className="px-4 py-2 rounded-full border border-black/10 md:text-[13px] text-[10px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors">
+              Send reminder <span className="hidden md:inline-block">to all</span>
             </button>
-            <button className="px-4 py-2 rounded-full border border-black/10 text-[13px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors">
+            <button className="px-4 py-2 rounded-full border border-black/10 md:text-[13px] text-[10px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors">
               Extend deadline
             </button>
-            <button className="px-4 py-2 rounded-full border border-red-200 text-[13px] font-semibold text-red-700 hover:bg-red-50 transition-colors">
+            <button className="px-4 py-2 rounded-full border border-red-200 md:text-[13px] text-[10px] font-semibold text-red-700 hover:bg-red-50 transition-colors">
               Cancel review
             </button>
           </div>
@@ -144,8 +241,8 @@ export default function ReviewDetailsPage() {
                   </h3>
                   <p className="text-[13px] text-black/60">
                     {allSubmitted 
-                      ? `${review.submittedCount}/${review.reviewerCount} reviewers submitted.` 
-                      : `${review.submittedCount}/${review.reviewerCount} reviewers submitted before the deadline.`
+                      ? `${review.submitted_count}/${review.reviewer_count} reviewers submitted.` 
+                      : `${review.submitted_count}/${review.reviewer_count} reviewers submitted before the deadline.`
                     }
                   </p>
                 </div>
@@ -174,35 +271,39 @@ export default function ReviewDetailsPage() {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[14px] text-black/60">
-                  {review.submittedCount} of {review.reviewerCount} submitted
+                  {review.submitted_count} of {review.reviewer_count} submitted
                 </span>
                 <span className="text-[14px] font-bold text-[#1A0E07]">
-                  {Math.round((review.submittedCount / review.reviewerCount) * 100)}%
+                  {Math.round((review.submitted_count / review.reviewer_count) * 100)}%
                 </span>
               </div>
               <div className="h-2 bg-black/5 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-[#1A0E07] rounded-full transition-all duration-500"
-                  style={{ width: `${(review.submittedCount / review.reviewerCount) * 100}%` }}
+                  style={{ width: `${(review.submitted_count / review.reviewer_count) * 100}%` }}
                 ></div>
               </div>
             </div>
 
             {/* Reviewer list */}
             <div className="space-y-3">
-              {MOCK_REVIEWERS.map((reviewer) => (
+              {review.review_reviewers.filter((r) => r.reviewer_id).map((reviewer) => (
                 <div
                   key={reviewer.id}
                   className="flex items-center gap-4 p-4 rounded-xl border border-black/[0.05]"
                 >
                   <div className="w-10 h-10 rounded-full bg-[#1A0E07] flex items-center justify-center shrink-0">
-                    <span className="text-white font-bold text-[14px]">{reviewer.name.charAt(0)}</span>
+                    <span className="text-white font-bold text-[14px]">
+                      {(reviewer.profiles?.full_name || "User").charAt(0).toUpperCase()}
+                    </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[14px] font-semibold text-[#1A0E07]">{reviewer.name}</div>
+                    <div className="text-[14px] font-semibold text-[#1A0E07]">
+                      {reviewer.profiles?.full_name || "Unknown User"}
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    {reviewer.hasSubmitted ? (
+                    {reviewer.has_submitted ? (
                       <>
                         <span className="flex items-center gap-1.5 text-[13px] text-green-700 font-semibold">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -210,7 +311,9 @@ export default function ReviewDetailsPage() {
                           </svg>
                           Submitted
                         </span>
-                        <span className="text-[12px] text-black/40">{timeAgo(reviewer.submittedAt!)}</span>
+                        {reviewer.submitted_at && (
+                          <span className="text-[12px] text-black/40">{timeAgo(reviewer.submitted_at)}</span>
+                        )}
                       </>
                     ) : (
                       <>
@@ -236,11 +339,11 @@ export default function ReviewDetailsPage() {
             </div>
             <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
               <div className="text-[12px] text-black/40 mb-2">Reviewers</div>
-              <div className="text-[18px] font-bold text-[#1A0E07]">{review.reviewerCount}</div>
+              <div className="text-[18px] font-bold text-[#1A0E07]">{review.reviewer_count}</div>
             </div>
             <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
               <div className="text-[12px] text-black/40 mb-2">Created</div>
-              <div className="text-[14px] font-semibold text-[#1A0E07]">May 10, 2024</div>
+              <div className="text-[14px] font-semibold text-[#1A0E07]">{formatDate(review.created_at)}</div>
             </div>
           </div>
         </div>
@@ -250,36 +353,23 @@ export default function ReviewDetailsPage() {
         <div className="bg-white rounded-2xl border border-black/[0.07] p-6">
           <h2 className="text-lg font-bold text-[#1A0E07] mb-6">Activity</h2>
           <div className="space-y-0">
-            {[
-              { type: "review-submitted", user: "Jane Doe", time: "2h ago" },
-              { type: "review-submitted", user: "Alice Johnson", time: "1d ago" },
-              { type: "review-created", user: "You", time: "6d ago" },
-            ].map((activity, i) => (
-              <div key={i} className="flex gap-4 py-4 border-t border-black/[0.05] first:border-t-0">
+            {events?.length ? events.map((event) => (
+              <div key={event.id} className="flex gap-4 py-4 border-t border-black/[0.05] first:border-t-0">
                 <div className="w-8 h-8 rounded-full bg-black/[0.05] flex items-center justify-center shrink-0">
-                  {activity.type === "review-submitted" ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2">
-                      <path d="M9 11l3 3L22 4"></path>
-                      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
-                    </svg>
-                  ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A0E07" strokeWidth="2">
-                      <path d="M12 5v14M5 12h14"></path>
-                    </svg>
-                  )}
+                  {getActivityIcon(event.event_type)}
                 </div>
                 <div className="flex-1">
                   <div className="text-[14px] text-[#1A0E07]">
-                    {activity.type === "review-submitted" ? (
-                      <><span className="font-semibold">{activity.user}</span> submitted their review</>
-                    ) : (
-                      <><span className="font-semibold">{activity.user}</span> created the review</>
-                    )}
+                    {getActivityText(event)}
                   </div>
-                  <div className="text-[12px] text-black/40">{activity.time}</div>
+                  <div className="text-[12px] text-black/40">{timeAgo(event.created_at)}</div>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className="text-center py-12 text-black/40">
+                No activity yet
+              </div>
+            )}
           </div>
         </div>
       )}

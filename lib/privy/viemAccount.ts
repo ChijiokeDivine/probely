@@ -14,10 +14,14 @@ function getRpcUrl(): string {
  * Builds a viem WalletClient for the admin paymaster wallet that signs all transactions!
  */
 export function getAdminWalletClient(): WalletClient<Transport, Chain, PrivateKeyAccount> {
-  const privateKey = process.env.ADMIN_PRIVATE_KEY;
+  let privateKey = process.env.ADMIN_PRIVATE_KEY;
   const adminAddress = process.env.ADMIN_WALLET_ADDRESS;
   if (!privateKey || !adminAddress) {
     throw new Error("Missing required env vars: ADMIN_PRIVATE_KEY or ADMIN_WALLET_ADDRESS");
+  }
+  // Ensure private key must start with 0x, add prefix if missing
+  if (!privateKey.startsWith("0x")) {
+    privateKey = "0x" + privateKey;
   }
   const account = privateKeyToAccount(privateKey as `0x${string}`);
   return createWalletClient({

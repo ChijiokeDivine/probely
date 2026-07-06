@@ -307,10 +307,30 @@ export async function getReviewById(reviewId: string) {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("reviews")
-    .select("*, review_reviewers(*)")
+    .select("*")
     .eq("id", reviewId)
     .single();
+  console.log("[getReviewById] Query result:", { data, error });
   if (error || !data) throw new HttpError(404, "Review not found");
+
+  // Now get reviewers with profiles separately
+  const { data: reviewers, error: reviewersError } = await admin
+    .from("review_reviewers")
+    .select("*, profiles(id, full_name)")
+    .eq("review_id", reviewId);
+  console.log("[getReviewById] Reviewers result:", { reviewers, reviewersError });
+
+  return { ...data, review_reviewers: reviewers || [] };
+}
+
+export async function getReviewEvents(reviewId: string) {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("review_events")
+    .select("*")
+    .eq("review_id", reviewId)
+    .order("created_at", { ascending: false });
+  if (error) throw new HttpError(500, `Failed to get review events: ${error.message}`);
   return data;
 }
 
