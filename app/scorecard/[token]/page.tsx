@@ -225,9 +225,7 @@ export default function ScorecardPage() {
                 <div className="space-y-6">
                   {CATEGORIES.map(category => {
                     const weight = scorecard.categoryWeights[category.key as keyof CategoryWeights];
-                    const displayScore = submitted 
-                      ? (scores[category.key as keyof RawCategoryScores] ?? 0)
-                      : (scorecard.submittedScores?.[category.key as keyof typeof scorecard.submittedScores] ?? "N/A");
+                    const displayScore = scorecard.submittedScores?.[category.key as keyof typeof scorecard.submittedScores] ?? "N/A";
                     
                     return (
                       <div key={category.key} className="space-y-2">

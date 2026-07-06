@@ -99,7 +99,7 @@ export default function ReviewsPage() {
           {/* Reviews I'm Assigned To */}
           {assignments && assignments.length > 0 && (
             <div>
-              <h2 className="text-lg font-bold text-[#1A0E07] mb-4">Reviews I'm Assigned To</h2>
+              <h2 className="text-lg font-bold text-[#1A0E07] mb-4">Reviews I am Assigned To</h2>
               <div className="space-y-4">
                 {assignments.map((assignment) => (
                   <div
