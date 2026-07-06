@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { createClient } from "@/lib/supabase/client";
 
@@ -35,7 +35,11 @@ export default function SignupPage() {
   const viewportWidth = useViewportWidth();
   const isMobile = viewportWidth < 768;
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+  
+  // Get the next parameter from URL
+  const next = searchParams.get("next") || "/dashboard";
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -54,7 +58,7 @@ export default function SignupPage() {
       password,
       options: {
         data: { name },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
 
@@ -69,7 +73,7 @@ export default function SignupPage() {
       // Make sure this user has a wallet before we send them in,
       // in case the Supabase webhook hasn't fired yet.
       await fetch("/api/wallet/ensure", { method: "POST" });
-      router.push("/dashboard");
+      router.push(next);
       router.refresh();
       return;
     }
@@ -87,7 +91,7 @@ export default function SignupPage() {
 
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=/dashboard` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
     });
 
     if (oauthError) {

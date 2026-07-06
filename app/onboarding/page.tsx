@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
 const jakartaSans = Plus_Jakarta_Sans({
@@ -36,6 +36,10 @@ export default function OnboardingPage() {
   const viewportWidth = useViewportWidth();
   const isMobile = viewportWidth < 768;
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Get the next parameter from URL
+  const next = searchParams.get("next");
 
   useEffect(() => setMounted(true), []);
 
@@ -61,7 +65,7 @@ export default function OnboardingPage() {
         throw new Error(json.error || "Something went wrong — try again.");
       }
 
-      router.push(role === "admin" ? "/dashboard" : "/inbox");
+      router.push(next || (role === "admin" ? "/dashboard" : "/inbox"));
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong — try again.");

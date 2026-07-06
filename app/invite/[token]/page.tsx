@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import CountdownTimer from "@/app/components/ui/CountdownTimer";
+import { createClient } from "@/lib/supabase/client";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -35,32 +36,53 @@ type InviteData = TeamInvite | ReviewInvite;
 export default function InvitePage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const token = params.token as string;
+  const supabase = createClient();
 
   const [invite, setInvite] = useState<InviteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    async function loadInvite() {
+    async function checkAuthAndLoadInvite() {
       try {
+        // Check if user is authenticated
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        setUser(authUser);
+
+        // Load invite
         const res = await fetch(`/api/invite/${token}`);
         if (!res.ok) throw new Error("Failed to load invite");
         const data = await res.json();
         setInvite(data);
+
+        // If user is authenticated and there's an accepted query param, auto-accept
+        if (authUser && searchParams.get("accept") === "true" && data.type === "team" && data.status === "pending") {
+          await handleAccept();
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
     }
-    loadInvite();
-  }, [token]);
+    checkAuthAndLoadInvite();
+  }, [token, searchParams, supabase]);
 
   async function handleAccept() {
     setSubmitting(true);
     try {
+      if (!user) {
+        // Redirect to signup with invite token
+        const nextUrl = `/invite/${token}?accept=true`;
+        const redirectUrl = `/signup?next=${encodeURIComponent(nextUrl)}`;
+        router.push(redirectUrl);
+        return;
+      }
+
       const res = await fetch(`/api/invite/${token}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
