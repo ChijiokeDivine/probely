@@ -29,10 +29,12 @@ let instancePromise: Promise<FhevmInstance> | null = null;
  * recreate it per-call.
  */
 export function getFhevmInstance(): Promise<FhevmInstance> {
+  
   if (!instancePromise) {
     instancePromise = createInstance({
       ...SepoliaConfig,
       network: getRpcUrl(),
+      
     }).catch((err: unknown) => {
       // Allow a fresh attempt on the next call instead of permanently
       // caching a rejected promise.
