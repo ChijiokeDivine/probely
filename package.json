@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "mkdir -p node_modules/.pnpm/node-tfhe@1.4.0-alpha.3/node_modules/node-tfhe && cp node_modules/.pnpm/@zama-fhe+relayer-sdk@0.4.4/node_modules/node-tfhe/tfhe_bg.wasm node_modules/.pnpm/node-tfhe@1.4.0-alpha.3/node_modules/node-tfhe/ 2>/dev/null || cp node_modules/node-tfhe/tfhe_bg.wasm node_modules/.pnpm/node-tfhe@1.4.0-alpha.3/node_modules/node-tfhe/ 2>/dev/null || true && next dev",
     "build": "mkdir -p node_modules/.pnpm/node-tfhe@1.4.0-alpha.3/node_modules/node-tfhe && cp node_modules/.pnpm/@zama-fhe+relayer-sdk@0.4.4/node_modules/node-tfhe/tfhe_bg.wasm node_modules/.pnpm/node-tfhe@1.4.0-alpha.3/node_modules/node-tfhe/ 2>/dev/null || cp node_modules/node-tfhe/tfhe_bg.wasm node_modules/.pnpm/node-tfhe@1.4.0-alpha.3/node_modules/node-tfhe/ 2>/dev/null || true && next build",
     "start": "next start",
     "lint": "eslint"

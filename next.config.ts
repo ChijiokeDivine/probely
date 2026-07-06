@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['127.0.0.1'],
+  serverExternalPackages: [
+    "@zama-fhe/relayer-sdk",
+    "node-tfhe",
+  ],
   
   // Explicitly tell Next.js to track and include the WASM binary for this route
   outputFileTracingIncludes: {
