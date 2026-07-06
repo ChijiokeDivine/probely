@@ -34,6 +34,49 @@ const CATEGORIES = [
   { key: "cultureGrowth", label: "Culture & Growth", description: "Cultural fit and potential for growth" },
 ] as const;
 
+interface ConfirmationModalProps {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  title: string;
+  message: string;
+}
+
+function ConfirmationModal({ isOpen, onConfirm, onCancel, title, message }: ConfirmationModalProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/50"
+        onClick={onCancel}
+      />
+      {/* Modal Content */}
+      <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+        <div className="p-8">
+          <h2 className="text-xl font-bold text-[#1A0E07] mb-4">{title}</h2>
+          <p className="text-[14px] text-black/70 mb-8">{message}</p>
+          <div className="flex gap-3">
+            <button
+              onClick={onCancel}
+              className="flex-1 px-6 py-3 rounded-full border border-black/10 text-[14px] font-semibold text-black/70 hover:bg-black/[0.02] transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className="flex-1 px-6 py-3 rounded-full bg-[#1A0E07] text-white text-[14px] font-semibold hover:bg-[#2b1a0e] transition-colors"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ScorecardPage() {
   const params = useParams();
   const router = useRouter();
@@ -46,6 +89,7 @@ export default function ScorecardPage() {
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     async function loadScorecard() {
@@ -74,8 +118,8 @@ export default function ScorecardPage() {
     return `${(weightBps / 100).toFixed(0)}%`;
   }
 
-  async function handleSubmit() {
-    if (!confirm("Are you sure you want to submit your scores? This cannot be undone.")) return;
+  async function handleConfirmSubmit() {
+    setShowConfirmModal(false);
     setSubmitting(true);
     try {
       // TODO: Implement actual submission (call the on-chain submitScores
@@ -87,6 +131,10 @@ export default function ScorecardPage() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function handleSubmit() {
+    setShowConfirmModal(true);
   }
 
   if (loading) {
@@ -217,6 +265,14 @@ export default function ScorecardPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onConfirm={handleConfirmSubmit}
+        onCancel={() => setShowConfirmModal(false)}
+        title="Submit Scores?"
+        message="Are you sure you want to submit your scores? This cannot be undone."
+      />
     </div>
   );
 }
