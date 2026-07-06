@@ -71,7 +71,22 @@ export async function declineInvite(token: string, reason?: string) {
   return { success: true };
 }
 
-export async function getScorecardByToken(token: string) {
+export interface ScorecardResponse {
+  reviewId: string;
+  role: string;
+  deadline: string;
+  categoryWeights: CategoryWeights;
+  alreadySubmitted: boolean;
+  submittedScores?: {
+    problemSolving: string;
+    technicalDepth: string;
+    communication: string;
+    collaboration: string;
+    cultureGrowth: string;
+  };
+}
+
+export async function getScorecardByToken(token: string): Promise<ScorecardResponse> {
   const admin = createAdminClient();
   const { data: reviewerRow, error: reviewerError } = await admin
     .from("review_reviewers")
@@ -82,13 +97,29 @@ export async function getScorecardByToken(token: string) {
 
   if (reviewerError || !reviewerRow) throw new HttpError(404, "Scorecard not found");
 
-  return {
+  const result: ScorecardResponse = {
     reviewId: reviewerRow.review_id,
     role: reviewerRow.reviews.role,
     deadline: reviewerRow.reviews.deadline,
     categoryWeights: reviewerRow.reviews.category_weights,
     alreadySubmitted: reviewerRow.has_submitted,
   };
+
+  // If already submitted, fetch the submitted scores
+  if (reviewerRow.has_submitted) {
+    const { data: submission } = await admin
+      .from("review_score_submissions")
+      .select("handles")
+      .eq("review_id", reviewerRow.review_id)
+      .eq("reviewer_id", reviewerRow.reviewer_id)
+      .single();
+
+    if (submission?.handles) {
+      result.submittedScores = submission.handles;
+    }
+  }
+
+  return result;
 }
 
 const ZERO_AUTO_ADVANCE_RULE: AutoAdvanceRule = {

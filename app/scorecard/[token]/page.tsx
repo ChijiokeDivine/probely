@@ -25,6 +25,13 @@ interface ScorecardData {
   deadline: string;
   categoryWeights: CategoryWeights;
   alreadySubmitted: boolean;
+  submittedScores?: {
+    problemSolving: string;
+    technicalDepth: string;
+    communication: string;
+    collaboration: string;
+    cultureGrowth: string;
+  };
 }
 
 const CATEGORIES = [
@@ -194,19 +201,65 @@ export default function ScorecardPage() {
 
   if (scorecard.alreadySubmitted || submitted) {
     return (
-      <div className={`${jakartaSans.className} min-h-screen bg-[#f9f9f9] flex items-center justify-center px-4`}>
-        <div className="text-center max-w-md">
-          <div className="mb-6">
-            <lord-icon
-              src="https://cdn.lordicon.com/oqdmuxru.json"
-              trigger="loop"
-              style={{ width: "80px", height: "80px" }}
-            />
+      <div className={`${jakartaSans.className} min-h-screen bg-[#f9f9f9]`}>
+        <div className="max-w-3xl mx-auto px-4 py-12">
+          <div className="bg-white rounded-2xl border border-black/[0.07] overflow-hidden">
+            <div className="p-8 border-b border-black/[0.05] bg-green-50">
+              <div className="flex items-center gap-3 mb-4">
+                <lord-icon
+                  src="https://cdn.lordicon.com/oqdmuxru.json"
+                  trigger="loop"
+                  style={{ width: "40px", height: "40px" }}
+                />
+                <div>
+                  <h1 className="text-2xl font-bold text-[#1A0E07]">Submitted</h1>
+                  <p className="text-[14px] text-black/60">Your scores have been submitted successfully</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8">
+              <div className="mb-8">
+                <h2 className="text-lg font-semibold text-[#1A0E07] mb-4">Your Submitted Scores</h2>
+                <p className="text-[14px] text-black/60 mb-6">Review for: <span className="font-semibold text-[#1A0E07]">{scorecard.role}</span></p>
+                <div className="space-y-6">
+                  {CATEGORIES.map(category => {
+                    const weight = scorecard.categoryWeights[category.key as keyof CategoryWeights];
+                    const displayScore = submitted 
+                      ? (scores[category.key as keyof RawCategoryScores] ?? 0)
+                      : (scorecard.submittedScores?.[category.key as keyof typeof scorecard.submittedScores] ?? "N/A");
+                    
+                    return (
+                      <div key={category.key} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-[14px] font-semibold text-[#1A0E07]">{category.label}</h3>
+                            <p className="text-[12px] text-black/50">{category.description}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[12px] text-black/60">Weight</p>
+                            <p className="text-[14px] font-semibold text-[#1A0E07]">{getWeightDisplay(weight)}</p>
+                          </div>
+                        </div>
+                        <div className="bg-black/[0.02] rounded-xl p-4">
+                          <p className="text-[13px] text-black/60 mb-2">Your Score</p>
+                          <div className="text-2xl font-bold text-[#1A0E07]">
+                            {displayScore}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-blue-50 border border-blue-100">
+                <p className="text-[13px] text-blue-900">
+                  Your scores will be revealed once all reviewers have submitted their evaluations.
+                </p>
+              </div>
+            </div>
           </div>
-          <h1 className="text-xl font-bold text-[#1A0E07] mb-2">Thank You!</h1>
-          <p className="text-[14px] text-black/60 mb-6">
-            Your scores have been submitted successfully. They will be revealed once all reviewers have submitted.
-          </p>
         </div>
       </div>
     );
