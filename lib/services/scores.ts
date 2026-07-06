@@ -8,6 +8,7 @@ import { encryptReviewScores } from "@/lib/fhe/encryptScores";
 import { recordPendingTransaction, markTransactionConfirmed, markTransactionFailed } from "@/lib/services/activity";
 import { createNotification } from "@/lib/services/notifications";
 import { encodeTagMask } from "@/lib/contracts/constants";
+import { ensureWalletFunded } from "@/lib/services/walletFunding";
 import type { RawCategoryScores } from "@/lib/contracts/types";
 
 export interface SubmitScoreInput {
@@ -83,6 +84,22 @@ export async function submitScore(input: SubmitScoreInput) {
     ]);
     if (!isInvitedReviewer) {
       throw new HttpError(409, "The connected reviewer wallet is not currently invited on-chain for this review");
+    }
+
+    // Relayer pattern: ensure reviewer's wallet has sufficient gas before submission.
+    // The backend operator wallet funds reviewers as needed, covering gas costs.
+    const fundingResult = await ensureWalletFunded(reviewerAddress);
+    if (fundingResult.reason === "operator_unfunded") {
+      throw new HttpError(
+        503,
+        "The backend operator wallet is not funded. Please contact support to fund the relayer wallet."
+      );
+    }
+    if (fundingResult.reason === "error") {
+      throw new HttpError(
+        502,
+        `Failed to ensure sufficient gas for submission: ${fundingResult.error}`
+      );
     }
 
     const encrypted = await encryptReviewScores(getContractAddress(), reviewerAddress, input.scores);
