@@ -113,32 +113,6 @@ export async function POST(request: Request) {
     const inviterName = inviterProfile?.full_name || "Someone";
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/invite/${inviteToken}`;
 
-    console.log("Sending email with:", {
-      from: "Honio <no-reply@honio.xyz>",
-      to: email,
-      subject: `You've been invited to join ${inviterName}'s team on Honio`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #1A0E07;">You've been invited to Honio!</h2>
-          <p style="font-size: 16px;">Hi there,</p>
-          <p style="font-size: 16px;">
-            ${inviterName} has invited you to join their team on Honio to review candidates.
-          </p>
-          <p style="margin: 24px 0;">
-            <a href="${inviteUrl}" style="background-color: #1A0E07; color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none; font-weight: bold;">
-              Accept Invitation
-            </a>
-          </p>
-          <p style="font-size: 14px; color: #666;">
-            Or copy and paste this link into your browser:<br />
-            <a href="${inviteUrl}" style="color: #1A0E07;">${inviteUrl}</a>
-          </p>
-          <p style="font-size: 14px; color: #999; margin-top: 32px;">
-            This invitation will expire in 7 days.
-          </p>
-        </div>
-      `,
-    });
 
     // Send email with Resend
     const emailResult = await resend.emails.send({
