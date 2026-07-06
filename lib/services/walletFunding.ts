@@ -54,7 +54,7 @@ export async function ensureWalletFunded(address: Address): Promise<FundingResul
     const walletClient = createWalletClient({
       account: adminAccount,
       chain: sepolia,
-      transport: http(process.env.NEXT_PUBLIC_RPC_URL ?? "https://rpc.sepolia.org"),
+      transport: http(process.env.SEPOLIA_RPC_URL ?? "https://rpc.sepolia.org"),
     });
 
     const adminBalance = await publicClient.getBalance({ address: adminWalletAddress });
