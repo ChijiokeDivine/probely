@@ -92,7 +92,7 @@ export async function getScorecardByToken(token: string): Promise<ScorecardRespo
     .from("review_reviewers")
     .select("*, reviews(*)")
     .eq("id", token)
-    .in("status", ["invited", "active"])
+    .in("status", ["invited", "active", "submitted"])
     .single();
 
   if (reviewerError || !reviewerRow) throw new HttpError(404, "Scorecard not found");
