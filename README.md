@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Honio
 
-## Getting Started
+Honio is a blind hiring review platform built to make candidate evaluation fairer, more consistent, and less vulnerable to bias. The core idea is simple: reviewers submit their feedback privately, and the system only reveals the outcome when the review is ready to be evaluated.
 
-First, run the development server:
+## Why this project exists
+
+Hiring decisions are often shaped by inconsistent feedback, hidden social dynamics, and pressure to make fast calls based on first impressions. Honio exists to give teams a more structured way to review candidates by separating the act of evaluation from the act of comparison.
+
+The goal is not just to collect feedback, but to preserve the integrity of that feedback until the right moment. That makes the process more thoughtful, more private, and easier to trust.
+
+## What made me build it
+
+I built Honio because I wanted a better way to run interview reviews for hiring teams:
+
+- reduce bias from visible feedback loops
+- create a more consistent review experience
+- keep reviewer input private until the process is ready to reveal
+- make it easier for teams to compare candidates based on evidence rather than instinct
+
+The product also explores a more experimental layer: using encrypted computation so scores can remain private until a reveal point without exposing raw reviewer values too early.
+
+## How it works
+
+1. An admin creates a review for a candidate.
+2. Reviewers are invited to evaluate the candidate using weighted categories.
+3. Each reviewer submits their scores privately.
+4. The backend handles encryption and coordination through the review workflow.
+5. Once all required reviewers have submitted, the system can reveal the aggregated results.
+6. The team sees the outcome with weighted scores, review status, and related signals.
+
+### Core building blocks
+
+- Next.js for the product experience and API routes
+- Supabase for authentication and data storage
+- Privy for server-side wallet management
+- A smart contract and FHE-backed relayer flow for private score handling
+- Sepolia for contract interactions
+
+## Developer setup
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm
+- Access to Supabase, Privy, and a Sepolia RPC endpoint
+
+### 1. Install dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env.local` file and add the environment variables required by the app. At a minimum, you will likely need:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+PRIVY_APP_ID=
+PRIVY_APP_SECRET=
+SEPOLIA_RPC_URL=
+```
 
-## Learn More
+Depending on your deployment and feature set, you may also need additional values for contract addresses, wallet funding, webhook secrets, and mail delivery.
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Run the app locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Then open http://localhost:3000 in your browser.
 
-## Deploy on Vercel
+### 4. Useful commands
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+pnpm build
+pnpm lint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project structure
+
+- `app/` — Next.js routes, pages, and UI
+- `lib/` — auth, wallet, contract, FHE, Supabase, and service-layer integrations
+- `supabase/migrations/` — database schema updates
+- `public/` — static assets
+
+## Notes
+
+This is an early-stage product, and the repository includes both the product experience and the infrastructure needed to support private, on-chain review flows. If you are contributing, keep the privacy and trust model in mind: reviewer inputs should remain private until the intended reveal stage.
