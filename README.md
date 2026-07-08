@@ -2,6 +2,10 @@
 
 Honio is a blind hiring review platform built to make candidate evaluation fairer, more consistent, and less vulnerable to bias. The core idea is simple: reviewers submit their feedback privately, and the system only reveals the outcome when the review is ready to be evaluated.
 
+- I abstracted wallet signing and smart contract interactions so they happen automatically in the background. When a user signs up, a Privy wallet is created for them, allowing them to use the app without managing a crypto wallet themselves.
+  
+- fund this wallet with sepoilia eth to use the web app comfortably - 0x65d25dbB227FB9CA1afBeFf7f5c8CcE807a58a7B (admin wallet, paymaster coming soon)
+
 ## Why this project exists
 
 Hiring decisions are often shaped by inconsistent feedback, hidden social dynamics, and pressure to make fast calls based on first impressions. Honio exists to give teams a more structured way to review candidates by separating the act of evaluation from the act of comparison.
