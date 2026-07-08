@@ -4,7 +4,7 @@ Honio is a blind hiring review platform built to make candidate evaluation faire
 
 - I abstracted wallet signing and smart contract interactions so they happen automatically in the background. When a user signs up, a Privy wallet is created for them, allowing them to use the app without managing a crypto wallet themselves.
   
-- fund this wallet with sepoilia eth to use the web app comfortably - 0x65d25dbB227FB9CA1afBeFf7f5c8CcE807a58a7B (admin wallet, paymaster coming soon)
+- Fund this wallet with Sepolia ETH to use the app: 0x65d25dbB227FB9CA1afBeFf7f5c8CcE807a58a7B (Admin wallet for sponsored transactions. A paymaster is coming soon.)
 
 ## Why this project exists
 
