@@ -8,7 +8,7 @@ Honio is a blind hiring review platform built to make candidate evaluation faire
 
 ## Why this project exists
 
-Hiring decisions are often shaped by inconsistent feedback, hidden social dynamics, and pressure to make fast calls based on first impressions. Honio exists to give teams a more structured way to review candidates by separating the act of evaluation from the act of comparison.
+Hiring decisions are often shaped by interview bias, inconsistent feedback, hidden social dynamics, and pressure to make fast calls based on first impressions. Honio exists to give teams a more structured way to review candidates by separating the act of evaluation from the act of comparison.
 
 The goal is not just to collect feedback, but to preserve the integrity of that feedback until the right moment. That makes the process more thoughtful, more private, and easier to trust.
 
